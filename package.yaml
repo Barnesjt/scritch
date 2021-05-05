@@ -1,0 +1,50 @@
+name:                scritch
+version:             0.1.0.0
+github:              "barnesjt/scritch"
+license:             BSD3
+author:              "Jack Barnes"
+maintainer:          "barnesj@oregonstate.edu"
+copyright:           "2021 Jack Barnes"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            none
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/barnesjt/scritch#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  scritch-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - scritch
+    - gloss
+
+tests:
+  scritch-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - scritch
+    - gloss
