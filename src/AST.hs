@@ -39,3 +39,13 @@ str = Base . Str
 
 testProg :: Prog
 testProg = [App (Op Move) [obj (0, 0), int 10]]
+
+
+-- Random Thoughts --
+
+-- re: argument lists, typechecking - it's possible we don't need to do any of that in the first place,
+-- i.e. we could enforce tpye correctness in the visual object lang
+
+-- control flow constructs: sequencing, synchronizing, loops? As it stand we could make these sort of statements regular functions
+
+-- how important is it, in an educational context, that functions are truly first class? could compromise this property if it makes implementation significantly easier

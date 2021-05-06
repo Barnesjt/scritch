@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a0ce7acdb11004d0167d5337af50679ddc93218416be4beb5104c95ac18f9dad
+-- hash: 0ed998900090c56f8edc8cd4db46dc4ae8663d40e5c55e6a307366d596db1408
 
 name:           scritch
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      AST
       Lib
   other-modules:
       Paths_scritch
