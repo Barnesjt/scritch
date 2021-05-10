@@ -1,7 +1,5 @@
 module AST_2 where
 
-type Prog = ([Object], [Stmt])
-
 -- we're just applying functions to arguments
 data Stmt = App Function Stmt | Base Basic
     deriving (Eq, Show)
