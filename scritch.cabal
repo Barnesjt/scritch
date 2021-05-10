@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0ed998900090c56f8edc8cd4db46dc4ae8663d40e5c55e6a307366d596db1408
+-- hash: 4f217dfa6356d429016d551323210338a4b9b3d292d777cbfd984ca78d72b119
 
 name:           scritch
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       AST
+      AST_2
       Lib
   other-modules:
       Paths_scritch
@@ -40,6 +41,7 @@ library
 executable scritch-exe
   main-is: Main.hs
   other-modules:
+      Animation
       Paths_scritch
   hs-source-dirs:
       app
@@ -48,6 +50,8 @@ executable scritch-exe
       base >=4.7 && <5
     , gloss
     , scritch
+    , containers
+    , mtl
   default-language: Haskell2010
 
 test-suite scritch-test
