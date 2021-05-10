@@ -28,7 +28,6 @@ source-repository head
 library
   exposed-modules:
       AST
-      AST_2
       Lib
   other-modules:
       Paths_scritch

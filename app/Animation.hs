@@ -35,11 +35,11 @@ update dt (S (c:cs) m tick) = let m' = stmt m c
 
 
 translateObj :: String -> Float -> Float -> Map String (Float, Float) -> Map String (Float, Float) -- update position inside map
-translateObj o dx dy m = Map.adjust (\(x, y) -> (x + dx, y + dy)) o m
+translateObj o dist dir m = Map.adjust (\(x, y) -> (x + dist * (cos dir), y + dist * (sin dir))) o m
 
 stmt :: Model -> Stmt -> Model -- stmt applies the closest function to an object, ignoring others
 stmt (M m) (Base (Obj o)) = M m
-stmt (M m) (App (Move dx dy) (Base (Obj o))) = M (translateObj o dx dy m)
+stmt (M m) (App (Move dist dir) (Base (Obj o))) = M (translateObj o dist dir m)
 stmt (M m) (App _ s) = stmt (M m) s
 -- stmt (M m) (App (Move dx dy) s)
 --stmt (M m) ()
@@ -63,9 +63,20 @@ animateProg :: [Stmt] -> IO ()
 animateProg p = play win white fps (getState p) render inputHandler update
 
 testProg :: [Stmt]
-testProg = [App (Move 100 100) (App (Move (-100) (-100)) (obj "1")), App (Move 200 200) (App (Move (100) (-100)) (obj "2"))]
+testProg = [App (Move 100 (pi/4)) (App (Move (100) (pi/2)) (obj "1")), App (Move 200 (pi/4)) (App (Move (100) (-pi/2)) (obj "2"))]
 
 main :: IO ()
 main = animateProg testProg
 
 -- code is super messy right now, but it's a start
+
+-- "extending" with some syntactic sugar for shapes
+square :: Float -> String -> Stmt
+square l o = App (Move l 0)
+                    (App (Move l (pi/2))
+                        (App (Move l pi)
+                            (App (Move l (3*pi/2))
+                                (obj o))))
+
+squareProg :: [Stmt]
+squareProg = zipWith square [50, 100, 150, 200] ["1", "2", "3", "4"]
