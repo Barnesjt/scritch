@@ -2,6 +2,7 @@ module Test where
 
 import Lib
 
+--Some testing values for an object, transformations, and animation seq
 testObj :: Object
 testObj = Object "x" "Circle" 0 0 0 20 0
 
