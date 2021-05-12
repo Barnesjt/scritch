@@ -9,7 +9,7 @@ import Data.Fixed
 --Animate Window BG (Float -> Picture)
 main :: IO ()
 --main = display (InWindow "Nice Window" (200, 200) (10, 10)) white (Circle 80)
-main = animate (InWindow "Animation Time" (500, 500) (10, 10)) white $ myAnimation TestSt.as1 TestSt.testObj
+main = animate (InWindow "Animation Time" (500, 500) (10, 10)) white $ myAnimation TestSt.as3 TestSt.testObj
 
 
 -- Creates the animation function as Gloss expects it (Float -> Picture)

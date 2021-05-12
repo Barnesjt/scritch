@@ -54,7 +54,7 @@ rad x = x * (pi / 180.0)
 -- The return type is after the complete transformation
 doTransform :: Transformation -> Object -> Object
 doTransform Wait        obj = obj
-doTransform (Pivot x)   obj = obj { dir = (dir obj + x) `mod'` 360 }
+doTransform (Pivot x)   obj = obj { dir = dir obj + x}
 doTransform (Move x y)  obj = obj { posx = x, posy = y}
 doTransform (Grow x)    obj = obj { size = size obj * x}
 doTransform (Step x)    obj = obj { posx = posx obj + moveX * x , posy = posy obj + moveY * x}
@@ -63,10 +63,6 @@ doTransform (Step x)    obj = obj { posx = posx obj + moveX * x , posy = posy ob
                                     moveY = x * sin radDir
 doTransform (Combine []) obj     = obj
 doTransform (Combine (x:xs)) obj = doTransform (Combine xs) $ doTransform x obj
-
--- This is an example of the "sugar'ed" transformation
-stepBack :: Float -> Transformation
-stepBack x = Combine [Pivot 180, Step x, Pivot 180]
 
 -- Computes an intermediate object, for smooth animations
 --   Elapsed is meant to be > 0 & <= 1
