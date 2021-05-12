@@ -1,6 +1,5 @@
 module Animation where
 
-import Lib
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import AST
