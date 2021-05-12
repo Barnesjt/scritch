@@ -15,5 +15,5 @@ myAnimation anim obj x = objToPic $ doAnimation anim obj elapsed
     where elapsed = x `mod'` getAniLength anim
 
 objToPic :: Object -> Picture
-objToPic obj = Rotate (dir obj) (Translate (posx obj) (posy obj) (Circle (size obj)))
+objToPic obj = Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj)))
 
