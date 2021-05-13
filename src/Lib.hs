@@ -64,23 +64,6 @@ doTransform (Step x)    obj = obj { posx = posx obj + moveX * x , posy = posy ob
 doTransform (Combine []) obj     = obj
 doTransform (Combine (x:xs)) obj = doTransform (Combine xs) $ doTransform x obj
 
--- Computes an intermediate object, for smooth animations
---   Elapsed is meant to be > 0 & <= 1
-intermediateObj :: Object -> Float -> Object -> Object
-intermediateObj obj elapsed obj'
-                | elapsed < 0.0 = obj
-                | elapsed > 1.0 = obj'
-                | otherwise = obj { 
-                    posx = getMid (posx obj) (posx obj') elapsed,
-                    posy = getMid (posy obj) (posy obj') elapsed,
-                    posz = getMid (posz obj) (posz obj') elapsed,
-                    size = getMid (size obj) (size obj') elapsed,
-                    dir  = getMid (dir obj) (dir obj') elapsed
-                  }
-
---Gets a middle value with a start, end, and the ratio (0-1), careful no bounds check here.
-getMid :: Float -> Float -> Float -> Float
-getMid start end ratio = (end - start) * ratio + start
 
 -- Returns an object form a timed transformation with a starting object and the elapsed time.
 --  Uses the tranformation time and elapsed time to computer intermediate objects
