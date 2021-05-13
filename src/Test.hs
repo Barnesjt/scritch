@@ -19,10 +19,13 @@ as1 :: AnimationSeq
 as1 = [tt1, tt2, tt3, tt4, tt5]
 
 as2 :: AnimationSeq
-as2 = [(10, Combine [Step 10, Pivot 3600])]
+as2 = (0, Move 250 250) : [(10, Combine [Step 10, Pivot 3600])]
 
 as3 :: AnimationSeq
-as3 = (0, Move 0 (-200)) : repT tt6 5000
+as3 = repT tt6 5000
+
+as4 :: AnimationSeq
+as4 = []
 
 repT :: TimedTransformation -> Int -> AnimationSeq
 repT t 0 = []

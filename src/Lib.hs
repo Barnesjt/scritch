@@ -85,8 +85,21 @@ getMid start end ratio = (end - start) * ratio + start
 -- Returns an object form a timed transformation with a starting object and the elapsed time.
 --  Uses the tranformation time and elapsed time to computer intermediate objects
 doTimedTransform :: TimedTransformation -> Object -> Float -> Object
-doTimedTransform (seconds, trans) obj elapsed
-    = intermediateObj obj (elapsed / seconds) (doTransform trans obj)
+doTimedTransform (seconds, trans) obj elapsed 
+    = case trans of
+      Wait -> obj
+      Pivot x  -> doTransform (Pivot (ratio x)) obj
+      Move x y -> doTransform (Move (ratio diffX + x) (ratio diffY + y)) obj
+        where diffX = posx obj - x -- interpolate from posx obj, posy obj
+              diffY = posy obj - y
+      Grow x -> doTransform (Grow (ratio x)) obj
+      Step x -> doTransform (Step (ratio x)) obj
+      Combine [] -> obj
+      Combine (x:xs) -> doTimedTransform (seconds, x) (doTimedTransform (seconds, Combine xs) obj elapsed) elapsed
+  where ratio x = (elapsed / seconds) * x
+--    = intermediateObj obj (elapsed / seconds) (doTransform trans obj)
+
+
 
 -- Returns an object from an animationSeq, using a starting Object and elapsed time.
 --   Recurses on itself to find the current starting state (after last completed transform)

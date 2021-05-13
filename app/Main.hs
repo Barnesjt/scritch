@@ -6,10 +6,11 @@ import Test as TestSt
 
 import Data.Fixed
 
+bgColor = white
+
 --Animate Window BG (Float -> Picture)
 main :: IO ()
---main = display (InWindow "Nice Window" (200, 200) (10, 10)) white (Circle 80)
-main = animate (InWindow "Animation Time" (500, 500) (10, 10)) white $ myAnimation TestSt.as3 TestSt.testObj
+main = animate (InWindow "Animation Time" (500, 500) (10, 10)) bgColor $ myAnimation TestSt.as2 TestSt.testObj
 
 
 -- Creates the animation function as Gloss expects it (Float -> Picture)
@@ -23,5 +24,5 @@ myAnimation anim obj x = objToPic $ doAnimation anim obj elapsed
 -- Function to turn any object into a picture. Order matters (translate last!)
 -- This will need to be expanded to parse out different display values for objects
 objToPic :: Object -> Picture
-objToPic obj = Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj)))
+objToPic obj = Translate (-250) (-250) (Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj))))
 
