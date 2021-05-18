@@ -27,7 +27,6 @@ source-repository head
 
 library
   exposed-modules:
-      AST
       Lib
       Test
   other-modules:
@@ -41,7 +40,6 @@ library
 executable scritch-exe
   main-is: Main.hs
   other-modules:
-      Animation
       Paths_scritch
   hs-source-dirs:
       app
