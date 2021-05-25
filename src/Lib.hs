@@ -1,9 +1,11 @@
+{-# LANGUAGE GADTs #-}
+
 module Lib where
 
 import Data.Fixed
 
 --Transformation is a minimal set of all possible Transformations.
--- This includes a combine type constructor for compound transformations. 
+-- This includes a combine type constructor for compound transformations.
 
 -- Pivot is for rotating from the current angle
 -- Move is an absolute move to new coordinates
@@ -11,14 +13,20 @@ import Data.Fixed
 -- Step will move a distance in the direction it faces
 -- Wait does nothing (remain static)
 -- Combine sequences multiple transformations, eval'd left to right
-data Transformation =
-    Pivot Float
-  | Move Float Float
-  | Grow Float
-  | Step Float
-  | Wait
-  | Combine [Transformation]
-  deriving (Show, Eq)
+data Expr a where
+
+
+    -- Transformations
+    -- We assume that functions which return null are moving objects,
+    -- because object movement is the only side affect
+    Pivot   :: Float -> Transformation
+    Move    :: Float -> Float -> Transformation
+    Grow    :: Float -> Transformation
+    Step    :: Float -> Transformation
+    Wait    :: Transformation
+    Combine :: [Transformation] -> Transformation
+
+type Transformation = Expr ()
 
 -- Object is defined with record syntax
 -- name is for internal referencing
@@ -27,8 +35,8 @@ data Transformation =
 -- posz would be the depth in the scene to render the object (postive on "top")
 -- size for the draw size, For a circle this is the radius
 -- dir is the direction the object "faces", ie the direction it will step in. (East is 0 degrees)
-data Object = 
-  Object 
+data Object =
+  Object
     { name :: String,
       disp :: String,
       posx :: Float,
@@ -68,7 +76,7 @@ doTransform (Combine (x:xs)) obj = doTransform (Combine xs) $ doTransform x obj
 -- Returns an object form a timed transformation with a starting object and the elapsed time.
 --  Uses the tranformation time and elapsed time to computer intermediate objects
 doTimedTransform :: TimedTransformation -> Object -> Float -> Object
-doTimedTransform (seconds, trans) obj elapsed 
+doTimedTransform (seconds, trans) obj elapsed
     = case trans of
       Wait -> obj
       Pivot x  -> doTransform (Pivot (ratio x)) obj
@@ -88,7 +96,7 @@ doTimedTransform (seconds, trans) obj elapsed
 --   Recurses on itself to find the current starting state (after last completed transform)
 --    And then computes an intermediate object. If past the end of the animation, return final object
 doAnimation :: AnimationSeq -> Object -> Float -> Object
-doAnimation (tt@(sec, trans) : xs) obj elapsed 
+doAnimation (tt@(sec, trans) : xs) obj elapsed
       | elapsed > sec = doAnimation xs (doTransform trans obj) (elapsed - sec)
       | otherwise     = doTimedTransform tt obj elapsed
 doAnimation [] obj _ = obj
@@ -97,4 +105,3 @@ doAnimation [] obj _ = obj
 getAniLength :: AnimationSeq -> Float
 getAniLength [] = 0
 getAniLength ((s, _) : xs) = s + getAniLength xs
-
