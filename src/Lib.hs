@@ -14,15 +14,16 @@ import Data.Fixed
 -- Wait does nothing (remain static)
 -- Combine sequences multiple transformations, eval'd left to right
 data Expr a where
-
+    -- Literals
+    Lit :: a -> Expr a
 
     -- Transformations
     -- We assume that functions which return null are moving objects,
     -- because object movement is the only side affect
-    Pivot   :: Float -> Transformation
-    Move    :: Float -> Float -> Transformation
-    Grow    :: Float -> Transformation
-    Step    :: Float -> Transformation
+    Pivot   :: Expr Float -> Transformation
+    Move    :: Expr Float -> Expr Float -> Transformation
+    Grow    :: Expr Float -> Transformation
+    Step    :: Expr Float -> Transformation
     Wait    :: Transformation
     Combine :: [Transformation] -> Transformation
 
@@ -58,33 +59,36 @@ type AnimationSeq = [TimedTransformation]
 rad :: Float -> Float
 rad x = x * (pi / 180.0)
 
+evalF :: Expr Float -> Float
+evalF (Lit x) = x
+
 -- This computes a new object from a transformation and an object
 -- The return type is after the complete transformation
 doTransform :: Transformation -> Object -> Object
 doTransform Wait        obj = obj
-doTransform (Pivot x)   obj = obj { dir = dir obj + x}
-doTransform (Move x y)  obj = obj { posx = x, posy = y}
-doTransform (Grow x)    obj = obj { size = size obj * x}
-doTransform (Step x)    obj = obj { posx = posx obj + moveX * x , posy = posy obj + moveY * x}
+doTransform (Pivot x)   obj = obj { dir = dir obj + evalF x}
+doTransform (Move x y)  obj = obj { posx = evalF x, posy = evalF y}
+doTransform (Grow x)    obj = obj { size = size obj * evalF x}
+doTransform (Step x)    obj = obj { posx = posx obj + moveX * evalF x , posy = posy obj + moveY * evalF x}
                               where radDir = rad $ dir obj
-                                    moveX = x * cos radDir
-                                    moveY = x * sin radDir
+                                    moveX = evalF x * cos radDir
+                                    moveY = evalF x * sin radDir
 doTransform (Combine []) obj     = obj
 doTransform (Combine (x:xs)) obj = doTransform (Combine xs) $ doTransform x obj
 
 
 -- Returns an object form a timed transformation with a starting object and the elapsed time.
---  Uses the tranformation time and elapsed time to computer intermediate objects
+--  Uses the tranformation time and elapsed time to compute intermediate objects
 doTimedTransform :: TimedTransformation -> Object -> Float -> Object
 doTimedTransform (seconds, trans) obj elapsed
     = case trans of
       Wait -> obj
-      Pivot x  -> doTransform (Pivot (ratio x)) obj
-      Move x y -> doTransform (Move (ratio diffX + x) (ratio diffY + y)) obj
-        where diffX = posx obj - x -- interpolate from posx obj, posy obj
-              diffY = posy obj - y
-      Grow x -> doTransform (Grow (ratio x)) obj
-      Step x -> doTransform (Step (ratio x)) obj
+      Pivot x  -> doTransform (Pivot $ Lit (ratio $ evalF x)) obj
+      Move x y -> doTransform (Move (Lit (ratio diffX + evalF x)) (Lit (ratio diffY + evalF y))) obj
+        where diffX = posx obj - evalF x -- interpolate from posx obj, posy obj
+              diffY = posy obj - evalF y
+      Grow x -> doTransform (Grow $ Lit (ratio $ evalF x)) obj
+      Step x -> doTransform (Step $ Lit (ratio $ evalF x)) obj
       Combine [] -> obj
       Combine (x:xs) -> doTimedTransform (seconds, x) (doTimedTransform (seconds, Combine xs) obj elapsed) elapsed
   where ratio x = (elapsed / seconds) * x
