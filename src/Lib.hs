@@ -21,6 +21,9 @@ data Expr a where
     -- binary operators
     Bin :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
 
+    -- conditional
+    If :: Expr Bool -> Expr a -> Expr a -> Expr a
+
     -- Transformations
     Pivot   :: Expr Float -> Transformation
     Move    :: Expr Float -> Expr Float -> Transformation
@@ -42,21 +45,23 @@ data Function a where
     GT  :: Ord a => Function (a -> a -> Bool)
     EQ  :: Eq  a => Function (a -> a -> Bool)
 
+
 eval :: Expr a -> a
-eval (Lit a) = a
+eval (Lit a)     = a
 eval (Bin f l r) = (op f) (eval l) (eval r)
     where
         op :: Function (a -> b -> c) -> (a -> b -> c)
         op Add = (+)
         op Mul = (*)
         op Sub = (-)
+
         op And = (&&)
         op Or  = (||)
+
         op LT  = (<)
         op GT  = (>)
         op EQ  = (==)
-        -- evalFun :: Function (a -> b -> c) -> Expr a -> Expr b -> c
-        -- evalFun Add l r = eval l + eval r
+eval (If c t e)  = if eval c then eval t else eval e
 
 -- We assume that expressions which evaluate to null are moving objects,
 -- because object movement is the only side effect. The type synonym reflects this.

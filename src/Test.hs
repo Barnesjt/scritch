@@ -1,5 +1,6 @@
 module Test where
 
+import Prelude hiding (LT, GT, EQ)
 import Lib
 
 --Some testing values for an object, transformations, and animation seq
@@ -30,3 +31,9 @@ as4 = []
 repT :: TimedTransformation -> Int -> AnimationSeq
 repT t 0 = []
 repT t i = t : repT t (i-1)
+
+-- should return 90
+testExpr :: Expr Int
+testExpr = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
+                (Bin Mul (Lit 9) (Lit 10))
+                (Bin Sub (Lit 9) (Lit 10))
