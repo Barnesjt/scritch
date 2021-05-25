@@ -18,6 +18,9 @@ data Expr a where
     -- Literals
     Lit     :: a -> Expr a
 
+    -- unaray operatators
+    Un :: Function (a -> b) -> Expr a -> Expr b
+
     -- binary operators
     Bin     :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
 
@@ -25,6 +28,7 @@ data Expr a where
     If      :: Expr Bool -> Expr a -> Expr a -> Expr a
 
     -- retrieve info from an Object (should we represent this using Function?)
+    -- that would mean having literal ObjectFields and Literal Objects, so probably no
     Get     :: Object -> (ObjectField a) -> Expr a
 
     -- Transformations
@@ -52,6 +56,23 @@ data Function a where
     GT  :: Ord a => Function (a -> a -> Bool)
     EQ  :: Eq  a => Function (a -> a -> Bool)
 
+    Not :: Function (Bool -> Bool)
+    Neg :: Num a => Function (a -> a)
+
+op :: Function a -> a
+op Add = (+)
+op Mul = (*)
+op Sub = (-)
+
+op And = (&&)
+op Or  = (||)
+
+op LT  = (<)
+op GT  = (>)
+op EQ  = (==)
+
+op Not = not
+op Neg = negate
 
 -- data type of Object field references, for use with Get
 data ObjectField a where
@@ -68,18 +89,7 @@ data ObjectField a where
 eval :: Expr a -> a
 eval (Lit a)     = a
 eval (Bin f l r) = (op f) (eval l) (eval r)
-    where
-        op :: Function (a -> b -> c) -> (a -> b -> c)
-        op Add = (+)
-        op Mul = (*)
-        op Sub = (-)
-
-        op And = (&&)
-        op Or  = (||)
-
-        op LT  = (<)
-        op GT  = (>)
-        op EQ  = (==)
+eval (Un f e) = op f (eval e)
 eval (If c t e)  = if eval c then eval t else eval e
 eval (Get o f) = get f o where
     get :: ObjectField a -> Object -> a
@@ -129,7 +139,7 @@ doTransform Wait        obj = obj
 doTransform (Pivot x)   obj = obj { dir = dir obj + eval x}
 doTransform (Move x y)  obj = obj { posx = eval x, posy = eval y}
 doTransform (Grow x)    obj = obj { size = size obj * eval x}
-doTransform (Step x)    obj = obj { posx = posx obj + moveX * eval x , posy = posy obj + moveY * eval x}
+doTransform (Step x)    obj = obj { posx = posx obj + moveX, posy = posy obj + moveY}
                               where radDir = rad $ dir obj
                                     moveX = eval x * cos radDir
                                     moveY = eval x * sin radDir

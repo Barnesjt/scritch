@@ -10,7 +10,7 @@ bgColor = white
 
 --Animate Window BG (Float -> Picture)
 main :: IO ()
-main = animate (InWindow "Animation Time" (500, 500) (10, 10)) bgColor $ myAnimation TestSt.as2 TestSt.testObj
+main = animate (InWindow "Animation Time" (500, 500) (10, 10)) bgColor $ myAnimation TestSt.as4 TestSt.testObj
 
 
 -- Creates the animation function as Gloss expects it (Float -> Picture)
