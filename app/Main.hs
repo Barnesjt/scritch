@@ -25,4 +25,3 @@ myAnimation anim obj x = objToPic $ doAnimation anim obj elapsed
 -- This will need to be expanded to parse out different display values for objects
 objToPic :: Object -> Picture
 objToPic obj = Translate (-250) (-250) (Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj))))
-

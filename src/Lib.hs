@@ -24,7 +24,7 @@ data Expr a where
     -- conditional
     If      :: Expr Bool -> Expr a -> Expr a -> Expr a
 
-    -- retrieve info from an Object
+    -- retrieve info from an Object (should we represent this using Function?)
     Get     :: Object -> (ObjectField a) -> Expr a
 
     -- Transformations
@@ -39,6 +39,7 @@ data Expr a where
 -- because object movement is the only side effect. The type synonym reflects this.
 type Transformation = Expr ()
 
+-- type for all functions
 data Function a where
     Add :: Num a => Function (a -> a -> a)
     Mul :: Num a => Function (a -> a -> a)
@@ -52,7 +53,7 @@ data Function a where
     EQ  :: Eq  a => Function (a -> a -> Bool)
 
 
--- data type for use with Get
+-- data type of Object field references, for use with Get
 data ObjectField a where
     Name :: ObjectField String
     Disp :: ObjectField String
@@ -62,6 +63,8 @@ data ObjectField a where
     Size :: ObjectField Float
     Dir  :: ObjectField Float
 
+-- evaluate an abstract expression -- currently don't know what to do with Tranformations
+-- maybe we just won't deal with them here, because they are handles by the doTransform functions
 eval :: Expr a -> a
 eval (Lit a)     = a
 eval (Bin f l r) = (op f) (eval l) (eval r)
