@@ -3,6 +3,7 @@
 module Lib where
 
 import Data.Fixed
+import Prelude hiding (LT, GT, EQ)
 
 --Transformation is a minimal set of all possible Transformations.
 -- This includes a combine type constructor for compound transformations.
@@ -17,9 +18,10 @@ data Expr a where
     -- Literals
     Lit :: a -> Expr a
 
+    -- binary operators
+    Bin :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
+
     -- Transformations
-    -- We assume that functions which return null are moving objects,
-    -- because object movement is the only side affect
     Pivot   :: Expr Float -> Transformation
     Move    :: Expr Float -> Expr Float -> Transformation
     Grow    :: Expr Float -> Transformation
@@ -27,6 +29,37 @@ data Expr a where
     Wait    :: Transformation
     Combine :: [Transformation] -> Transformation
 
+
+data Function a where
+    Add :: Num a => Function (a -> a -> a)
+    Mul :: Num a => Function (a -> a -> a)
+    Sub :: Num a => Function (a -> a -> a)
+
+    And :: Function (Bool -> Bool -> Bool)
+    Or  :: Function (Bool -> Bool -> Bool)
+
+    LT  :: Ord a => Function (a -> a -> Bool)
+    GT  :: Ord a => Function (a -> a -> Bool)
+    EQ  :: Eq  a => Function (a -> a -> Bool)
+
+eval :: Expr a -> a
+eval (Lit a) = a
+eval (Bin f l r) = (op f) (eval l) (eval r)
+    where
+        op :: Function (a -> b -> c) -> (a -> b -> c)
+        op Add = (+)
+        op Mul = (*)
+        op Sub = (-)
+        op And = (&&)
+        op Or  = (||)
+        op LT  = (<)
+        op GT  = (>)
+        op EQ  = (==)
+        -- evalFun :: Function (a -> b -> c) -> Expr a -> Expr b -> c
+        -- evalFun Add l r = eval l + eval r
+
+-- We assume that expressions which evaluate to null are moving objects,
+-- because object movement is the only side effect. The type synonym reflects this.
 type Transformation = Expr ()
 
 -- Object is defined with record syntax
@@ -59,20 +92,17 @@ type AnimationSeq = [TimedTransformation]
 rad :: Float -> Float
 rad x = x * (pi / 180.0)
 
-evalF :: Expr Float -> Float
-evalF (Lit x) = x
-
 -- This computes a new object from a transformation and an object
 -- The return type is after the complete transformation
 doTransform :: Transformation -> Object -> Object
 doTransform Wait        obj = obj
-doTransform (Pivot x)   obj = obj { dir = dir obj + evalF x}
-doTransform (Move x y)  obj = obj { posx = evalF x, posy = evalF y}
-doTransform (Grow x)    obj = obj { size = size obj * evalF x}
-doTransform (Step x)    obj = obj { posx = posx obj + moveX * evalF x , posy = posy obj + moveY * evalF x}
+doTransform (Pivot x)   obj = obj { dir = dir obj + eval x}
+doTransform (Move x y)  obj = obj { posx = eval x, posy = eval y}
+doTransform (Grow x)    obj = obj { size = size obj * eval x}
+doTransform (Step x)    obj = obj { posx = posx obj + moveX * eval x , posy = posy obj + moveY * eval x}
                               where radDir = rad $ dir obj
-                                    moveX = evalF x * cos radDir
-                                    moveY = evalF x * sin radDir
+                                    moveX = eval x * cos radDir
+                                    moveY = eval x * sin radDir
 doTransform (Combine []) obj     = obj
 doTransform (Combine (x:xs)) obj = doTransform (Combine xs) $ doTransform x obj
 
@@ -83,12 +113,12 @@ doTimedTransform :: TimedTransformation -> Object -> Float -> Object
 doTimedTransform (seconds, trans) obj elapsed
     = case trans of
       Wait -> obj
-      Pivot x  -> doTransform (Pivot $ Lit (ratio $ evalF x)) obj
-      Move x y -> doTransform (Move (Lit (ratio diffX + evalF x)) (Lit (ratio diffY + evalF y))) obj
-        where diffX = posx obj - evalF x -- interpolate from posx obj, posy obj
-              diffY = posy obj - evalF y
-      Grow x -> doTransform (Grow $ Lit (ratio $ evalF x)) obj
-      Step x -> doTransform (Step $ Lit (ratio $ evalF x)) obj
+      Pivot x  -> doTransform (Pivot $ Lit (ratio $ eval x)) obj
+      Move x y -> doTransform (Move (Lit (ratio diffX + eval x)) (Lit (ratio diffY + eval y))) obj
+        where diffX = posx obj - eval x -- interpolate from posx obj, posy obj
+              diffY = posy obj - eval y
+      Grow x -> doTransform (Grow $ Lit (ratio $ eval x)) obj
+      Step x -> doTransform (Step $ Lit (ratio $ eval x)) obj
       Combine [] -> obj
       Combine (x:xs) -> doTimedTransform (seconds, x) (doTimedTransform (seconds, Combine xs) obj elapsed) elapsed
   where ratio x = (elapsed / seconds) * x
