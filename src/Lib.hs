@@ -16,13 +16,16 @@ import Prelude hiding (LT, GT, EQ)
 -- Combine sequences multiple transformations, eval'd left to right
 data Expr a where
     -- Literals
-    Lit :: a -> Expr a
+    Lit     :: a -> Expr a
 
     -- binary operators
-    Bin :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
+    Bin     :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
 
     -- conditional
-    If :: Expr Bool -> Expr a -> Expr a -> Expr a
+    If      :: Expr Bool -> Expr a -> Expr a -> Expr a
+
+    -- retrieve info from an Object
+    Get     :: Object -> (ObjectField a) -> Expr a
 
     -- Transformations
     Pivot   :: Expr Float -> Transformation
@@ -32,6 +35,9 @@ data Expr a where
     Wait    :: Transformation
     Combine :: [Transformation] -> Transformation
 
+---- We assume that expressions which evaluate to null are moving objects,
+-- because object movement is the only side effect. The type synonym reflects this.
+type Transformation = Expr ()
 
 data Function a where
     Add :: Num a => Function (a -> a -> a)
@@ -45,6 +51,16 @@ data Function a where
     GT  :: Ord a => Function (a -> a -> Bool)
     EQ  :: Eq  a => Function (a -> a -> Bool)
 
+
+-- data type for use with Get
+data ObjectField a where
+    Name :: ObjectField String
+    Disp :: ObjectField String
+    PosX :: ObjectField Float
+    PosY :: ObjectField Float
+    PosZ :: ObjectField Float
+    Size :: ObjectField Float
+    Dir  :: ObjectField Float
 
 eval :: Expr a -> a
 eval (Lit a)     = a
@@ -62,10 +78,16 @@ eval (Bin f l r) = (op f) (eval l) (eval r)
         op GT  = (>)
         op EQ  = (==)
 eval (If c t e)  = if eval c then eval t else eval e
+eval (Get o f) = get f o where
+    get :: ObjectField a -> Object -> a
+    get Name = name
+    get Disp = disp
+    get PosX = posx
+    get PosY = posy
+    get PosZ = posz
+    get Size = size
+    get Dir  = dir
 
--- We assume that expressions which evaluate to null are moving objects,
--- because object movement is the only side effect. The type synonym reflects this.
-type Transformation = Expr ()
 
 -- Object is defined with record syntax
 -- name is for internal referencing
