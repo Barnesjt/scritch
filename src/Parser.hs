@@ -38,8 +38,9 @@ parse (P p) = p
 
 strict :: Parser a -> String -> Either a Error
 strict (P p) s = case p s of
-    Left (r, "") -> Left r
-    Left (r, e)  -> Right $ "Extra unparsed characters: '" ++ e ++ "'."
+    Left  (r, "") -> Left r
+    Left  (r, e)  -> Right $ "Extra unparsed characters: '" ++ e ++ "'."
+    Right err -> Right err
 
 -- get the first character
 item :: Parser Char
