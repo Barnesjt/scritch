@@ -30,6 +30,7 @@ library
       AnimationLib
       Test
       Parser
+      ShowInstances
   other-modules:
       Paths_scritch
   hs-source-dirs:

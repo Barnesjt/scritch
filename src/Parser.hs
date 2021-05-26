@@ -141,7 +141,7 @@ comparison = do
 iexpr :: Parser (Expr Int)
 iexpr = do
     o <- token arithmetic
-    l <- token iexpr
+    l <- iexpr
     r <- token iexpr
     return (Bin o l r)
-    <|> token iexpr
+    <|> token intLit
