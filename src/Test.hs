@@ -2,6 +2,8 @@ module Test where
 
 import Prelude hiding (LT, GT, EQ)
 import AnimationLib
+import ShowInstances
+import Parser
 
 --Some testing/dummy values for an object, transformations, and animation seq
 testObj :: Object
@@ -32,7 +34,10 @@ repT t 0 = []
 repT t i = t : repT t (i-1)
 
 -- should return 90
-testExpr :: Expr Int
-testExpr = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
+testE1 :: Expr Int
+testE1 = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
                 (Bin Mul (Lit 9) (Lit 10))
                 (Bin Sub (Lit 9) (Lit 10))
+
+testE2 :: Expr ()
+testE2 = Combine [Combine [], Wait, Move (Get testObj PosX) (Bin (Compose Add Neg) (Lit 9) (Lit 9))]

@@ -77,6 +77,14 @@ token p = do
     many space
     return r
 
+-- look for parens around a parser
+parens :: Parser a -> Parser a
+parens p = do
+    token $ char '('
+    r <- p
+    token $ char ')'
+    return r
+
 -- parse a digit, but as an integer this time
 digitInt :: Parser Int
 digitInt = do
@@ -96,27 +104,57 @@ int = nat <|> do
     x <- nat
     return (-x)
 
+-- parser for floating points
+float :: Parser Float
+float = do
+    x <- int
+    char '.'
+    y <- nat
+    return ((fromIntegral x) + (fromIntegral y) / 10)
+    <|> do
+    x <- int
+    return $ fromIntegral x
+
+
+-- parse a list of a given parser, surrounded by brackets and separated by commas
+listOf :: Parser a -> Parser [a]
+listOf p = token (char '[') >> iter p where
+    iter p = do
+        r <- p
+        s <- token $ oneOf [',', ']']
+        case s of
+            ',' -> do
+                rs <- iter p
+                return (r:rs)
+            ']' -> return [r]
+        <|>
+               do
+        token $ char ']'
+        return []
 
 -- parsers for our lang
 
-intLit :: Parser (Expr Int)
-intLit = do
-    x <- int
+
+-- literals, object fields and operators--
+
+floatLit :: Parser (Expr Float)
+floatLit = do
+    x <- token $ float
     return (Lit x)
 
 boolLit :: Parser (Expr Bool)
 boolLit = do
-    b <- string "True"
+    b <- token $ string "True"
     return (Lit True)
     <|>
           do
-    b <- string "False"
+    b <- token $ string "False"
     return (Lit False)
 
 -- parser for functions of type Int -> Int -> Int
-arithmetic :: Parser (Function (Int -> Int -> Int))
+arithmetic :: Parser (Function (Float -> Float -> Float))
 arithmetic = do
-    o <- inList ["Add", "Mul", "Sub"]
+    o <- token $ inList ["Add", "Mul", "Sub"]
     case o of
         "Add" -> return Add
         "Mul" -> return Mul
@@ -125,23 +163,104 @@ arithmetic = do
 -- parser for binary boolean functions
 logical :: Parser (Function (Bool -> Bool -> Bool))
 logical = do
-    o <- inList ["And", "Or"]
+    o <- token $ inList ["And", "Or"]
     case o of
         "And" -> return And
         "Or"  -> return Or
 
 comparison :: Ord a => Parser (Function (a -> a -> Bool))
 comparison = do
-    o <- inList ["GT", "LT", "EQ"]
+    o <- token $ inList ["GT", "LT", "EQ"]
     case o of
         "LT" -> return LT
         "GT" -> return GT
         "EQ" -> return EQ
 
-iexpr :: Parser (Expr Int)
-iexpr = do
-    o <- arithmetic
-    l <- iexpr
-    r <- iexpr
+-- parse the fields fo objects
+stringField :: Parser (ObjectField String)
+stringField = do
+    f <- token $ inList ["Name", "Disp"]
+    case f of
+        "Name" -> return Name
+        "Disp" -> return Disp
+
+floatField :: Parser (ObjectField Float)
+floatField = do
+    f <- token $ inList ["PosX", "PosY", "PosZ", "Size", "Dir"]
+    case f of
+        "PosX" -> return PosX
+        "PosY" -> return PosY
+        "PosZ" -> return PosZ
+        "Size" -> return Size
+        "Dir"  -> return Dir
+
+
+-- more complex expressions
+
+-- parse numerical exprs up to Binary operators
+nexpr :: Parser (Expr Float)
+nexpr = do
+    o <- token arithmetic
+    l <- token nexpr
+    r <- token nexpr
     return (Bin o l r)
-    <|> iexpr
+    <|> token floatLit
+
+    <|> token (ifExpr nexpr)
+
+-- parse simple bool exprs and comparisons
+bexpr :: Parser (Expr Bool)
+bexpr = do
+    o <- token logical
+    l <- token bexpr
+    r <- token bexpr
+    return (Bin o l r)
+
+    <|> token boolLit
+
+    <|> token (compExpr bexpr)  -- instances of comparisons
+    <|> token (compExpr nexpr)
+
+-- parse a comparison using the given parser for both sides of the expression
+compExpr :: Ord a => Parser (Expr a) -> Parser (Expr Bool)
+compExpr p = do
+    o <- token comparison
+    l <- token p
+    r <- token p
+    return (Bin o l r)
+
+-- parse a conditional with Then and Else branches coming from a given parser
+ifExpr :: Parser (Expr a) -> Parser (Expr a)
+ifExpr p = do
+    token $ string "If"
+    c <- parens bexpr
+    token $ string "Then"
+    t <- parens p
+    token $ string "Else"
+    e <- parens p
+    return (If c t e)
+
+-- how to implement Get???
+
+
+transformation :: Parser Transformation
+transformation = do
+    o <- token $ inList ["Pivot", "Move", "Grow", "Step", "Wait", "Combine"]
+    case o of
+        "Pivot" -> do
+            e <- nexpr
+            return $ Pivot e
+        "Move" -> do
+            x <- nexpr
+            y <- nexpr
+            return $ Move x y
+        "Grow" -> do
+            e <- nexpr
+            return $ Grow e
+        "Step" -> do
+            e <- nexpr
+            return $ Step e
+        "Wait" -> return Wait
+        "Combine" -> do
+            ts <- listOf transformation
+            return $ Combine ts
