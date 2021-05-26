@@ -4,6 +4,7 @@ import Control.Applicative
 import Control.Monad
 import AnimationLib
 import Prelude hiding (EQ, LT, GT)
+import Data.Char (isAlphaNum)
 
 newtype Parser a = P (String -> Maybe (a, String))
 
@@ -29,6 +30,11 @@ instance Alternative Parser where
 -- applies a parser
 parse :: Parser a -> String -> Maybe (a, String)
 parse (P p) = p
+
+strict :: Parser a -> String -> Maybe a
+strict (P p) s = case p s of
+    Just (r, "") -> Just r
+    _ -> Nothing
 
 -- get the first character
 item :: Parser Char
@@ -56,6 +62,9 @@ lower = oneOf ['a'..'z']
 upper = oneOf ['A'..'Z']
 digit = oneOf ['0'..'9']
 space = oneOf " \t\n\r"
+
+alphanum :: Parser Char
+alphanum = sat isAlphaNum
 
 -- match a string
 string :: String -> Parser String
@@ -116,21 +125,18 @@ float = do
     return $ fromIntegral x
 
 
+-- parse a sequence of a given parser with the given beginning, end, and separator chars
+sequenceOf :: Char -> Char -> Char -> Parser a -> Parser [a]
+sequenceOf b e s p = do
+    token (char b)
+    r <- token p
+    rs <- many ((token $ char s) >> p)
+    token $ char e
+    return (r:rs)
+
 -- parse a list of a given parser, surrounded by brackets and separated by commas
 listOf :: Parser a -> Parser [a]
-listOf p = token (char '[') >> iter p where
-    iter p = do
-        r <- p
-        s <- token $ oneOf [',', ']']
-        case s of
-            ',' -> do
-                rs <- iter p
-                return (r:rs)
-            ']' -> return [r]
-        <|>
-               do
-        token $ char ']'
-        return []
+listOf = sequenceOf '[' ']' ','
 
 -- parsers for our lang
 
@@ -264,3 +270,61 @@ transformation = do
         "Combine" -> do
             ts <- listOf transformation
             return $ Combine ts
+
+-- imposing some syntax for timed transformations, "time -> transformation"
+timedTransformation :: Parser TimedTransformation
+timedTransformation = do
+    s <- token float
+    string "->"
+    t <- transformation
+    return (s, t)
+
+-- AnimationSequences are bracketed by {} and separated by ;
+animationSeq :: Parser AnimationSeq
+animationSeq = sequenceOf '{' '}' ';' timedTransformation
+
+
+-- data Object =
+--   Object
+--     { name :: String,
+--       disp :: String,
+--       posx :: Float,
+--       posy :: Float,
+--       posz :: Float,
+--       size :: Float,
+--       dir :: Float
+--     } deriving (Show)
+--
+
+-- tentative (very simple) object declaration syntax
+object :: Parser Object
+object = do
+    token $ string "Obj"
+    token $ char '('
+    n <- token $ some alphanum
+    token $ char ','
+    d <- token $ some alphanum
+    token $ char ','
+    x <- token $ float
+    token $ char ','
+    y <- token $ float
+    token $ char ','
+    z <- token $ float
+    token $ char ','
+    size <- token $ float
+    token $ char ','
+    dir <- token $ float
+    token $ char ')'
+    return (Object n d x y z size dir)
+
+stmt :: Parser (Object, AnimationSeq)
+stmt = do
+    o <- object
+    token $ string "->"
+    a <- animationSeq
+    return (o, a)
+
+parseInput :: String -> (Object, AnimationSeq)
+parseInput s = case parse stmt s of
+    Just (t, "") -> t
+    _ -> (Object "" "" 0 0 0 0 0, [])

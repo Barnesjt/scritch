@@ -1,6 +1,7 @@
 module WebIDE where
 
-import IDEParser ( parseInput )
+import Parser ( parseInput )
+import AnimationLib ( Object, AnimationSeq )
 
 import Control.Monad ( void )
 import Control.Concurrent ( runInBoundThread )
@@ -8,13 +9,14 @@ import Control.Concurrent ( runInBoundThread )
 import qualified Graphics.UI.Threepenny as UI
 import Graphics.UI.Threepenny.Core
 
+
 --This runs the IDE, taking some function to run parsed input
 --Currently it's a String, but it should be changed in the future
-runIDE :: (String -> IO ()) -> IO ()
+runIDE :: ((Object, AnimationSeq) -> IO ()) -> IO ()
 runIDE glossRunner = startGUI defaultConfig $ setup glossRunner
 
 --This is where the UI is defined
-setup :: (String -> IO()) -> Window -> UI ()
+setup :: ((Object, AnimationSeq) -> IO()) -> Window -> UI ()
 setup glossRunner w = void $ do
     return w # set title "Scritch IDE"  --browser window title
     elProg  <- UI.textarea              --text area (TODO: should be bigger by default)
