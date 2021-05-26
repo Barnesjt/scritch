@@ -2,7 +2,7 @@ module Parser where
 
 import Control.Applicative
 import Control.Monad
-import Lib
+import AnimationLib
 import Prelude hiding (EQ, LT, GT)
 
 newtype Parser a = P (String -> Maybe (a, String))
