@@ -25,7 +25,7 @@ as3 :: AnimationSeq
 as3 = repT tt6 5000
 
 as4 :: AnimationSeq
-as4 = []
+as4 = [(0, Move (Lit 250) (Lit 250)), (1, Step (Lit (-10))), (1, Step (Lit 10))]
 
 repT :: TimedTransformation -> Int -> AnimationSeq
 repT t 0 = []

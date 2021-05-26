@@ -17,14 +17,18 @@ data Expr a where
     -- Literals
     Lit     :: a -> Expr a
 
+    -- unary operatators
+    Un :: Function (a -> b) -> Expr a -> Expr b
+
     -- binary operators
     Bin     :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
 
     -- conditional
     If      :: Expr Bool -> Expr a -> Expr a -> Expr a
 
-    -- retrieve info from an Object
-    Get     :: Object -> ObjectField a -> Expr a
+    -- retrieve info from an Object (should we represent this using Function?)
+    -- that would mean having literal ObjectFields and Literal Objects, so probably no
+    Get     :: Object -> (ObjectField a) -> Expr a
 
     -- Transformations
     Pivot   :: Expr Float -> Transformation
@@ -38,6 +42,7 @@ data Expr a where
 -- because object movement is the only side effect. The type synonym reflects this.
 type Transformation = Expr ()
 
+-- type for all functions
 data Function a where
     Add :: Num a => Function (a -> a -> a)
     Mul :: Num a => Function (a -> a -> a)
@@ -48,10 +53,31 @@ data Function a where
 
     LT  :: Ord a => Function (a -> a -> Bool)
     GT  :: Ord a => Function (a -> a -> Bool)
-    EQ  :: Eq  a => Function (a -> a -> Bool)
+    EQ  :: Ord  a => Function (a -> a -> Bool)  -- restricting EQ to Ord instead of just Eq for convenience
 
+    Not :: Function (Bool -> Bool)
+    Neg :: Num a => Function (a -> a)
 
--- data type for use with Get
+    Compose :: Function (b -> c) -> Function (a -> b) -> Function (a -> c)
+
+op :: Function a -> a
+op Add = (+)
+op Mul = (*)
+op Sub = (-)
+
+op And = (&&)
+op Or  = (||)
+
+op LT  = (<)
+op GT  = (>)
+op EQ  = (==)
+
+op Not = not
+op Neg = negate
+
+op (Compose f g) = op f . op g
+
+-- data type of Object field references, for use with Get
 data ObjectField a where
     Name :: ObjectField String
     Disp :: ObjectField String
@@ -61,21 +87,12 @@ data ObjectField a where
     Size :: ObjectField Float
     Dir  :: ObjectField Float
 
+-- evaluate an abstract expression -- currently don't know what to do with Tranformations
+-- maybe we just won't deal with them here, because they are handled by the doTransform functions
 eval :: Expr a -> a
 eval (Lit a)     = a
-eval (Bin f l r) = op f (eval l) (eval r)
-    where
-        op :: Function (a -> b -> c) -> (a -> b -> c)
-        op Add = (+)
-        op Mul = (*)
-        op Sub = (-)
-
-        op And = (&&)
-        op Or  = (||)
-
-        op LT  = (<)
-        op GT  = (>)
-        op EQ  = (==)
+eval (Bin f l r) = (op f) (eval l) (eval r)
+eval (Un f e) = op f (eval e)
 eval (If c t e)  = if eval c then eval t else eval e
 eval (Get o f) = get f o where
     get :: ObjectField a -> Object -> a
@@ -113,7 +130,7 @@ type TimedTransformation = (Float, Transformation)
 -- A animation is a list of TimedTransformations that occur in sequence starting with head
 type AnimationSeq = [TimedTransformation]
 
---convience function for computing radians from degrees (which is what we store)
+--convenience function for computing radians from degrees (which is what we store)
 --  radians are needed for sin/cos for step
 rad :: Float -> Float
 rad x = x * (pi / 180.0)
@@ -159,7 +176,7 @@ doAnimation (tt@(sec, trans) : xs) obj elapsed
       | otherwise     = doTimedTransform tt obj elapsed
 doAnimation [] obj _ = obj
 
--- Convienence function to be used in app for repeating animations with modulus animation length
+-- Convenience function to be used in app for repeating animations with modulus animation length
 getAniLength :: AnimationSeq -> Float
 getAniLength [] = 0
 getAniLength ((s, _) : xs) = s + getAniLength xs

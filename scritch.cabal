@@ -29,6 +29,7 @@ library
   exposed-modules:
       AnimationLib
       Test
+      Parser
   other-modules:
       Paths_scritch
   hs-source-dirs:
