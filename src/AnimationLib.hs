@@ -1,8 +1,7 @@
 {-# LANGUAGE GADTs #-}
 
-module Lib where
+module AnimationLib where
 
-import Data.Fixed
 import Prelude hiding (LT, GT, EQ)
 
 --Transformation is a minimal set of all possible Transformations.
@@ -165,9 +164,7 @@ doTimedTransform (seconds, trans) obj elapsed
       Step x -> doTransform (Step $ Lit (ratio $ eval x)) obj
       Combine [] -> obj
       Combine (x:xs) -> doTimedTransform (seconds, x) (doTimedTransform (seconds, Combine xs) obj elapsed) elapsed
-  where ratio x = (elapsed / seconds) * x
---    = intermediateObj obj (elapsed / seconds) (doTransform trans obj)
-
+  where ratio x = elapsed / seconds * x
 
 
 -- Returns an object from an animationSeq, using a starting Object and elapsed time.

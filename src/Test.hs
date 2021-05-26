@@ -1,19 +1,18 @@
 module Test where
 
 import Prelude hiding (LT, GT, EQ)
-import Lib
+import AnimationLib
 
---Some testing values for an object, transformations, and animation seq
+--Some testing/dummy values for an object, transformations, and animation seq
 testObj :: Object
 testObj = Object "x" "Circle" 0 0 0 20 0
 
-tt1, tt2, tt3, tt4 :: TimedTransformation
+tt1, tt2, tt3, tt4, tt5, tt6 :: TimedTransformation
 tt1 = (1, Pivot $ Lit 90)
 tt2 = (3, Step $ Lit 10)
 tt3 = (1, Grow $ Lit 5)
 tt4 = (0, Pivot $ Lit 45)
 tt5 = (10, Step $ Lit 15)
-
 tt6 = (0.005, Combine [Pivot $ Lit 3, Step $ Lit 3, Grow $ Lit 1.0007])
 
 as1 :: AnimationSeq
