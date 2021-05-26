@@ -59,6 +59,8 @@ data Function a where
     Not :: Function (Bool -> Bool)
     Neg :: Num a => Function (a -> a)
 
+    Compose :: Function (b -> c) -> Function (a -> b) -> Function (a -> c)
+
 op :: Function a -> a
 op Add = (+)
 op Mul = (*)
@@ -73,6 +75,8 @@ op EQ  = (==)
 
 op Not = not
 op Neg = negate
+
+op (Compose f g) = op f . op g
 
 -- data type of Object field references, for use with Get
 data ObjectField a where
