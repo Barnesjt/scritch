@@ -6,7 +6,9 @@ import AnimationLib
 import Prelude hiding (EQ, LT, GT)
 import Data.Char (isAlphaNum)
 
-newtype Parser a = P (String -> Maybe (a, String))
+type Error = String
+
+newtype Parser a = P (String -> Either (a, String) Error)
 
 instance Functor Parser where
     fmap = liftM
@@ -16,31 +18,34 @@ instance Applicative Parser where
     (<*>) = ap
 
 instance Monad Parser where
-    return a = P (\s -> Just (a, s))
+    return a = P (\s -> Left (a, s))
     p >>= q  = P (\s -> case parse p s of
-        Nothing -> Nothing
-        Just (r, s') -> parse (q r) s')
+        Left (r, s') -> parse (q r) s'
+        Right err          -> Right err)
 
 instance Alternative Parser where
-    empty = P (\_ -> Nothing)
+    empty = P (\s -> case s of
+        [] -> Right $ "EmptyError at end of input string."
+        (c:cs) -> Right $ "EmptyError on char '" ++ c:"', did not parse '" ++ cs ++ "'.")
+
     (P p) <|> (P q) = P (\s -> case p s of
-        Nothing -> q s
+        Right _ -> q s
         s' -> s')
 
 -- applies a parser
-parse :: Parser a -> String -> Maybe (a, String)
+parse :: Parser a -> String -> Either (a, String) Error
 parse (P p) = p
 
-strict :: Parser a -> String -> Maybe a
+strict :: Parser a -> String -> Either a Error
 strict (P p) s = case p s of
-    Just (r, "") -> Just r
-    _ -> Nothing
+    Left (r, "") -> Left r
+    Left (r, e)  -> Right $ "Extra unparsed characters: '" ++ e ++ "'."
 
 -- get the first character
 item :: Parser Char
 item = P (\s -> case s of
-    [] -> Nothing
-    (c:cs) -> Just (c, cs))
+    [] -> Right "Unexpected end of input string."
+    (c:cs) -> Left (c, cs))
 
 -- see if the first character satisfies a predicate
 sat :: (Char -> Bool) -> Parser Char
@@ -325,6 +330,6 @@ stmt = do
     return (o, a)
 
 parseInput :: String -> (Object, AnimationSeq)
-parseInput s = case parse stmt s of
-    Just (t, "") -> t
-    _ -> (Object "" "" 0 0 0 0 0, [])
+parseInput s = case strict stmt s of
+    Left  p -> p
+    Right e -> (Object  e "Error" 0 0 0 0 0, [])
