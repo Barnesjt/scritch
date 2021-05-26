@@ -15,8 +15,8 @@ bgColor = white
 
 --Currently this just takes a string to put into the title
   --Should be modified to take the whatever type the parsed input would be
-runGloss :: String -> IO ()
-runGloss title = animate (InWindow title (500, 500) (10, 10)) bgColor $ myAnimation TestSt.as2 TestSt.testObj
+runGloss :: (Object, AnimationSeq) -> IO ()
+runGloss (obj, ani) = animate (InWindow "Window" (500, 500) (10, 10)) bgColor $ myAnimation ani obj
 
 -- Creates the animation function as Gloss expects it (Float -> Picture)
 -- getAniLength used to loop animation
@@ -29,4 +29,3 @@ myAnimation anim obj x = objToPic $ doAnimation anim obj elapsed
 -- This will need to be expanded to parse out different display values for objects
 objToPic :: Object -> Picture
 objToPic obj = Translate (-250) (-250) (Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj))))
-

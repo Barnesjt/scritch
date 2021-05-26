@@ -41,3 +41,9 @@ testE1 = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
 
 testE2 :: Expr ()
 testE2 = Combine [Combine [], Wait, Move (Get testObj PosX) (Bin (Compose Add Neg) (Lit 9) (Lit 9))]
+
+parse1 :: Maybe AnimationSeq
+parse1 = strict animationSeq "{0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}"
+
+parse2 :: Maybe (Object, AnimationSeq)
+parse2 = strict stmt "Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}"
