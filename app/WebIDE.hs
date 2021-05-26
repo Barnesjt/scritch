@@ -22,6 +22,7 @@ setup glossRunner w = void $ do
     elProg  <- UI.textarea              --text area (TODO: should be bigger by default)
     elClear <- UI.button # set UI.text "Clear" --Two buttons
     elRun   <- UI.button # set UI.text "Run"
+    elOutput <- UI.p # set UI.text "Try typing in a program"
 
     let
         --Define how to draw the layout (attach as children in the DOM)
@@ -32,7 +33,7 @@ setup glossRunner w = void $ do
 
         --This defined the shape of the layout (row of buttons, hr, textarea)
         mkLayout :: UI Element
-        mkLayout = column [row [element elClear, element elRun],UI.hr, element elProg]
+        mkLayout = column [row [element elClear, element elRun],UI.hr, element elProg, element elOutput]
 
         --Called by the Clear onClick, wipes the text area
         clearInput :: UI ()
@@ -43,7 +44,12 @@ setup glossRunner w = void $ do
         runInput :: UI ()
         runInput = void $ do
             inputProg <- get value elProg
-            liftIO $ runInBoundThread $ glossRunner (parseInput inputProg)
+            case parseInput inputProg of
+                Nothing -> void $ element elOutput # set UI.text "Parsing error. Unable to spawn output."
+                Just i -> do
+                    element elOutput # set UI.text "Output running. Close child window before running output again"
+                    liftIO $ runInBoundThread $ glossRunner i
+
     --Event handlers for the buttons
     on UI.click elClear $ const clearInput
     on UI.click elRun $ const runInput
