@@ -15,8 +15,12 @@ bgColor = white
 
 --Currently this just takes a string to put into the title
   --Should be modified to take the whatever type the parsed input would be
-runGloss :: (Object, AnimationSeq) -> IO ()
-runGloss (obj, ani) = animate (InWindow "Window" (500, 500) (10, 10)) bgColor $ myAnimation ani obj
+runGloss :: [(Object, AnimationSeq)] -> IO ()
+runGloss objAn = animate (InWindow "Scritch Output" (500, 500) (10, 10)) bgColor $ pictures . myListAnimator objAn
+
+myListAnimator :: [(Object, AnimationSeq)] -> Float -> [Picture]
+myListAnimator [] _       = [blank]
+myListAnimator ((o,a):as) x = myAnimation a o x : myListAnimator as x
 
 -- Creates the animation function as Gloss expects it (Float -> Picture)
 -- getAniLength used to loop animation
