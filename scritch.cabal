@@ -29,6 +29,7 @@ library
   exposed-modules:
       Lib
       Test
+      Parser
   other-modules:
       Paths_scritch
   hs-source-dirs:
