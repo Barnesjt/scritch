@@ -324,7 +324,7 @@ stmt = do
     a <- animationSeq
     return (o, a)
 
-parseInput :: String -> Maybe (Object, AnimationSeq)
+parseInput :: String -> (Object, AnimationSeq)
 parseInput s = case parse stmt s of
-                    Just (t, "") -> Just t
-                    _ -> Nothing
+    Just (t, "") -> t
+    _ -> (Object "" "" 0 0 0 0 0, [])
