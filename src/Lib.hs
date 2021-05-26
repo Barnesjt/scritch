@@ -18,7 +18,7 @@ data Expr a where
     -- Literals
     Lit     :: a -> Expr a
 
-    -- unaray operatators
+    -- unary operatators
     Un :: Function (a -> b) -> Expr a -> Expr b
 
     -- binary operators
@@ -89,7 +89,7 @@ data ObjectField a where
     Dir  :: ObjectField Float
 
 -- evaluate an abstract expression -- currently don't know what to do with Tranformations
--- maybe we just won't deal with them here, because they are handles by the doTransform functions
+-- maybe we just won't deal with them here, because they are handled by the doTransform functions
 eval :: Expr a -> a
 eval (Lit a)     = a
 eval (Bin f l r) = (op f) (eval l) (eval r)
@@ -131,7 +131,7 @@ type TimedTransformation = (Float, Transformation)
 -- A animation is a list of TimedTransformations that occur in sequence starting with head
 type AnimationSeq = [TimedTransformation]
 
---convience function for computing radians from degrees (which is what we store)
+--convenience function for computing radians from degrees (which is what we store)
 --  radians are needed for sin/cos for step
 rad :: Float -> Float
 rad x = x * (pi / 180.0)
@@ -179,7 +179,7 @@ doAnimation (tt@(sec, trans) : xs) obj elapsed
       | otherwise     = doTimedTransform tt obj elapsed
 doAnimation [] obj _ = obj
 
--- Convienence function to be used in app for repeating animations with modulus animation length
+-- Convenience function to be used in app for repeating animations with modulus animation length
 getAniLength :: AnimationSeq -> Float
 getAniLength [] = 0
 getAniLength ((s, _) : xs) = s + getAniLength xs
