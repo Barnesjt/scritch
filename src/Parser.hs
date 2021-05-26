@@ -25,8 +25,8 @@ instance Monad Parser where
 
 instance Alternative Parser where
     empty = P (\s -> case s of
-        [] -> Right $ "EmptyError at end of input string."
-        (c:cs) -> Right $ "EmptyError on char '" ++ c:"', did not parse '" ++ cs ++ "'.")
+        [] -> Right $ "Parse failed at end of input string."
+        (c:cs) -> Right $ "Parse failed on char '" ++ c:"', did not parse '" ++ cs ++ "'.")
 
     (P p) <|> (P q) = P (\s -> case p s of
         Right _ -> q s
