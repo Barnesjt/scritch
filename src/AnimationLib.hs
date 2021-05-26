@@ -1,8 +1,7 @@
 {-# LANGUAGE GADTs #-}
 
-module Lib where
+module AnimationLib where
 
-import Data.Fixed
 import Prelude hiding (LT, GT, EQ)
 
 --Transformation is a minimal set of all possible Transformations.
@@ -25,7 +24,7 @@ data Expr a where
     If      :: Expr Bool -> Expr a -> Expr a -> Expr a
 
     -- retrieve info from an Object
-    Get     :: Object -> (ObjectField a) -> Expr a
+    Get     :: Object -> ObjectField a -> Expr a
 
     -- Transformations
     Pivot   :: Expr Float -> Transformation
@@ -64,7 +63,7 @@ data ObjectField a where
 
 eval :: Expr a -> a
 eval (Lit a)     = a
-eval (Bin f l r) = (op f) (eval l) (eval r)
+eval (Bin f l r) = op f (eval l) (eval r)
     where
         op :: Function (a -> b -> c) -> (a -> b -> c)
         op Add = (+)
@@ -126,7 +125,7 @@ doTransform Wait        obj = obj
 doTransform (Pivot x)   obj = obj { dir = dir obj + eval x}
 doTransform (Move x y)  obj = obj { posx = eval x, posy = eval y}
 doTransform (Grow x)    obj = obj { size = size obj * eval x}
-doTransform (Step x)    obj = obj { posx = posx obj + moveX * eval x , posy = posy obj + moveY * eval x}
+doTransform (Step x)    obj = obj { posx = posx obj + moveX, posy = posy obj + moveY}
                               where radDir = rad $ dir obj
                                     moveX = eval x * cos radDir
                                     moveY = eval x * sin radDir
@@ -148,9 +147,7 @@ doTimedTransform (seconds, trans) obj elapsed
       Step x -> doTransform (Step $ Lit (ratio $ eval x)) obj
       Combine [] -> obj
       Combine (x:xs) -> doTimedTransform (seconds, x) (doTimedTransform (seconds, Combine xs) obj elapsed) elapsed
-  where ratio x = (elapsed / seconds) * x
---    = intermediateObj obj (elapsed / seconds) (doTransform trans obj)
-
+  where ratio x = elapsed / seconds * x
 
 
 -- Returns an object from an animationSeq, using a starting Object and elapsed time.

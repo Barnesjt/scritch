@@ -57,3 +57,10 @@ Missing C library GL?
 Now missing GLU?
 
 `sudo apt install freeglut3{,-dev}`
+
+
+You're gonna need these:
+
+`sudo apt install libglfw3-dev`
+
+`sudo apt install xorg-dev`
