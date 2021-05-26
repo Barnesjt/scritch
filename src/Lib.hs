@@ -54,7 +54,7 @@ data Function a where
 
     LT  :: Ord a => Function (a -> a -> Bool)
     GT  :: Ord a => Function (a -> a -> Bool)
-    EQ  :: Eq  a => Function (a -> a -> Bool)
+    EQ  :: Ord  a => Function (a -> a -> Bool)  -- restricting EQ to Ord instead of just Eq for convenience
 
     Not :: Function (Bool -> Bool)
     Neg :: Num a => Function (a -> a)

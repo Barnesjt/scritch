@@ -3,6 +3,7 @@ module Parser where
 import Control.Applicative
 import Control.Monad
 import Lib
+import Prelude hiding (EQ, LT, GT)
 
 newtype Parser a = P (String -> Maybe (a, String))
 
@@ -128,3 +129,19 @@ logical = do
     case o of
         "And" -> return And
         "Or"  -> return Or
+
+comparison :: Ord a => Parser (Function (a -> a -> Bool))
+comparison = do
+    o <- inList ["GT", "LT", "EQ"]
+    case o of
+        "LT" -> return LT
+        "GT" -> return GT
+        "EQ" -> return EQ
+
+iexpr :: Parser (Expr Int)
+iexpr = do
+    o <- arithmetic
+    l <- iexpr
+    r <- iexpr
+    return (Bin o l r)
+    <|> iexpr
