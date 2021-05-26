@@ -15,10 +15,10 @@ import Prelude hiding (LT, GT, EQ)
 -- Combine sequences multiple transformations, eval'd left to right
 data Expr a where
     -- Literals
-    Lit     :: a -> Expr a
+    Lit     :: Show a => a -> Expr a
 
     -- unary operatators
-    Un :: Function (a -> b) -> Expr a -> Expr b
+    Un      :: Function (a -> b) -> Expr a -> Expr b
 
     -- binary operators
     Bin     :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
