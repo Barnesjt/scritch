@@ -1,5 +1,12 @@
 # Scritch
 
+## Welcome to Scritch!
+See the section below for information pertaining to our [Milestone 2](#milestone-2) submission. For instructions running Scritch see: [Running The Project](#running-the-project). If you need help installing stack (required the build the project), see: [Install Stack](#install-stack). If you are having difficulty building Scritch, you likely need to acquire some external libraries (as required by Gloss, our package for drawing OpenGL render windows). These libraries are listed in the [Troubleshooting](#troubleshooting) section.
+
+If you have any issues with the project, please reach out directly and we will be more than glad to help get it running for you!
+
+Thanks!
+
 ## Milestone 2
 ### Project goals and progress:
 The main goal of the project, as originally stated, is to provide an educational functional programming experience. However, the focus of our work thus far has been towards creating an interactive programming (perhaps design?) experience. Our goal for the work after milestone 2 is to tie our final submission closer to the original goal. Some specific features we would like to add to the object language are variables (setting and getting) and ```While``` loops. Variables will require some model of state.
@@ -31,6 +38,9 @@ Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Combine [Grow 20, Ste
 
 Here's a different example:
 ![Demo Output](https://user-images.githubusercontent.com/43552143/119758893-27dd1100-be5c-11eb-81cc-fccee4e891e2.gif)
+
+And Another:
+![Demo Output2](https://user-images.githubusercontent.com/43552143/119771419-87deb200-be72-11eb-9201-baf6c23fb8fe.gif)
 
 ### Design Decisions
 1. One significant design choice was the use of GADTs in our representation of the abstract syntax. The highly type-restricted abstract syntax makes writing parsers for the language safer, and fairly mechanical. Most notable is the ```Function``` datatype, which encodes the type of all functions in our language. In addition to making parsing safer, this type greatly reduces the amount of code needed to evaluate operators - they are all handled by the ```op``` function, regardless of the number and type of arguments.   
