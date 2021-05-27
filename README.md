@@ -1,4 +1,4 @@
-# scritch
+# Scritch
 
 ## Milestone 2
 ### Project goals and progress:
@@ -7,7 +7,7 @@ The main goal of the project, as originally stated, is to provide an educational
 ### What does the project do?
 Right now, when running the project (see: [Running the Project](#running-the-project)), a browser window will be launched to the Scritch IDE. Objects and their animations can be defined within the text area. New objects can be added and removed with the buttons. Pressing run will launch a render window with your defined animations. If a syntax error is detected, there will be some text in the render window telling you where the error occured. Because of how our parser works, many type errors are considered syntax errors.
 
-The basic, high level syntax of our language is ```Object definition -> {semicolon separated list of timed transformations}```, where the syntax of a timed transformation is ```time -> transformation```. The src/AnimationLib.hs and src/Parser.hs files contain all of the information you'll need to write your own fun animations! Note the ```Get``` and ```Compose``` are not yet implemented.
+The basic, high level syntax of our language is ```Object definition -> {semicolon separated list of timed transformations}```, where the syntax of a timed transformation is ```time -> transformation```. The [AnimationLib.hs](src/AnimationLib.hs) and [Parser.hs](src/Parser.hs) files contain all of the information you'll need to write your own fun animations! Note the ```Get``` and ```Compose``` are not yet implemented.
 
 Here are some sample definitions that should help you derive some interesting animations:
 
@@ -33,11 +33,13 @@ Here's a different example:
 ![Demo Output](https://user-images.githubusercontent.com/43552143/119758893-27dd1100-be5c-11eb-81cc-fccee4e891e2.gif)
 
 ### Design Decisions
-One significant design choice was the use of GADTs in our representation of the abstract syntax. The highly type-restricted abstract syntax makes writing parsers for the language safer, and fairly mechanical. Most notable is the ```Function``` datatype, which encodes the type of all functions in our language. In addition to making parsing safer, this type greatly reduces the amount of code needed to evaluate operators - they are all handled by the ```op``` function, regardless of the number and type of arguments.
+1. One significant design choice was the use of GADTs in our representation of the abstract syntax. The highly type-restricted abstract syntax makes writing parsers for the language safer, and fairly mechanical. Most notable is the ```Function``` datatype, which encodes the type of all functions in our language. In addition to making parsing safer, this type greatly reduces the amount of code needed to evaluate operators - they are all handled by the ```op``` function, regardless of the number and type of arguments.
 
 The cost of the type-directed parsing enforced by our GADTs is that certain things which could be done with one less safe parser, by ignoring the types of internal expressions, now require multiple parsers. The best example of this is the parsers ```iexpr``` and ```bexpr```. The primary benefit of our parsers is that they allow us to catch a large class of type errors while parsing, without having to separately type-check the program.
 
-Another related design choice was writing our own parsers, instead of using an external library. Our approach was heavily based on Hutton and Meijer's "Monadic parsing in Haskell" (http://www.cs.nott.ac.uk/~pszgmh//pearl.pdf) and a similar chapter in Hutton's "Programming in Haskell". We kept our ```Parser``` type simple, only implementing ```Monad``` (and ```Functor``` and ```Applicative```) and ```Alternative```. We believe this approach makes our code clean and easy to read, as well as reducing a small amount of overhead from another external library. It also makes fine-tuning our parsers easy, which is important when making (and, of course, re-making) decisions about the concrete syntax of our object language.
+2. Another related design choice was writing our own parsers, instead of using an external library. Our approach was heavily based on Hutton and Meijer's "Monadic parsing in Haskell" (http://www.cs.nott.ac.uk/~pszgmh//pearl.pdf) and a similar chapter in Hutton's "Programming in Haskell". We kept our ```Parser``` type simple, only implementing ```Monad``` (and ```Functor``` and ```Applicative```) and ```Alternative```. We believe this approach makes our code clean and easy to read, as well as reducing a small amount of overhead from another external library. It also makes fine-tuning our parsers easy, which is important when making (and, of course, re-making) decisions about the concrete syntax of our object language.
+
+3. The final design choice we'll discuss involves the implementation of the UI, which we call the IDE. As you may know, implementing a GUI can be quite a heavy-weight task, which is why we opted to use [threepenny-gui](http://hackage.haskell.org/package/threepenny-gui). The implementation with threepenny is quite light, defined with a UI monad, and provides an interactive web interface at (http://localhost:8023). From within the GUI, we even have the ability to spawn a child process for Gloss's render window (local to the server). We could go into some of the implementation details and why they're quite interesting, but instead I suggest you explore yourself in [WebIDE.hs](/app/WebIDE.hs).
 
 ## Milestone 1
 Project goals and progress:
