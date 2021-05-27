@@ -8,9 +8,13 @@ The main goal of the project, as originally stated, is to provide an educational
 Right now, when running the project (see: [Running the Project](#running-the-project)), a browser window will be launched to the Scritch IDE. Objects and their animations can be defined within the text area. New objects can be added and removed with the buttons. Pressing run will launch a render window with your defined animations. If a syntax error is detected, there will be some text in the render window telling you where the error occured.
 
 Here are some sample definitions that should help you derive some interesting animations:
+
 `Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}`
+
 `Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 10 -> Combine [Step 10, Pivot 360]}`
+
 `Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 5 -> Grow 25}`
+
 `Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 10 -> Combine [Grow 25, Step 10, Pivot 360]}`
 
 
