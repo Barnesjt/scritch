@@ -7,6 +7,8 @@ The main goal of the project, as originally stated, is to provide an educational
 ### What does the project do?
 Right now, when running the project (see: [Running the Project](#running-the-project)), a browser window will be launched to the Scritch IDE. Objects and their animations can be defined within the text area. New objects can be added and removed with the buttons. Pressing run will launch a render window with your defined animations. If a syntax error is detected, there will be some text in the render window telling you where the error occured. Because of how our parser works, many type errors are considered syntax errors.
 
+The basic, high level syntax of our language is ```Object definition -> {semicolon separated list of timed transformations}```, where the syntax of a timed transformation is ```time -> transformation```. The src/AnimationLib.hs and src/Parser.hs files contain all of the information you'll need to write your own fun animations! Note the ```Get``` and ```Compose``` are not yet implemented.
+
 Here are some sample definitions that should help you derive some interesting animations:
 
 `Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}`
