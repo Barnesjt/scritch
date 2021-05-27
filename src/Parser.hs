@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 module Parser where
 
 import Control.Applicative
@@ -5,6 +6,7 @@ import Control.Monad
 import AnimationLib
 import Prelude hiding (EQ, LT, GT)
 import Data.Char (isAlphaNum)
+
 
 type Error = String
 
@@ -24,8 +26,8 @@ instance Monad Parser where
         Right err          -> Right err)
 
 instance Alternative Parser where
-    empty = P (\s -> case s of
-        [] -> Right $ "Parse failed at end of input string."
+    empty = P (\case
+        [] -> Right "Parse failed at end of input string."
         (c:cs) -> Right $ "Parse failed on char '" ++ c:"', did not parse '" ++ cs ++ "'.")
 
     (P p) <|> (P q) = P (\s -> case p s of
@@ -44,7 +46,7 @@ strict (P p) s = case p s of
 
 -- get the first character
 item :: Parser Char
-item = P (\s -> case s of
+item = P (\case
     [] -> Right "Unexpected end of input string."
     (c:cs) -> Left (c, cs))
 
@@ -59,8 +61,8 @@ char :: Char -> Parser Char
 char = sat . (==)
 
 -- match from a list of characters
-oneOf :: [Char] -> Parser Char
-oneOf = sat . (flip elem)
+oneOf :: String -> Parser Char
+oneOf = sat . flip elem
 
 -- special cases of oneOf
 lower, upper, digit, space :: Parser Char
@@ -125,10 +127,9 @@ float = do
     x <- int
     char '.'
     y <- nat
-    return ((fromIntegral x) + (fromIntegral y) / 10)
+    return (fromIntegral x + fromIntegral y / 10)
     <|> do
-    x <- int
-    return $ fromIntegral x
+    fromIntegral <$> int
 
 
 -- parse a sequence of a given parser with the given beginning, end, and separator chars
@@ -136,7 +137,7 @@ sequenceOf :: Char -> Char -> Char -> Parser a -> Parser [a]
 sequenceOf b e s p = do
     token (char b)
     r <- token p
-    rs <- many ((token $ char s) >> p)
+    rs <- many (token (char s) >> p)
     token $ char e
     return (r:rs)
 
@@ -151,7 +152,7 @@ listOf = sequenceOf '[' ']' ','
 
 floatLit :: Parser (Expr Float)
 floatLit = do
-    x <- token $ float
+    x <- token float
     return (Lit x)
 
 boolLit :: Parser (Expr Bool)
@@ -259,19 +260,12 @@ transformation :: Parser Transformation
 transformation = do
     o <- token $ inList ["Pivot", "Move", "Grow", "Step", "Wait", "Combine"]
     case o of
-        "Pivot" -> do
-            e <- nexpr
-            return $ Pivot e
+        "Pivot" -> Pivot <$> nexpr
         "Move" -> do
             x <- nexpr
-            y <- nexpr
-            return $ Move x y
-        "Grow" -> do
-            e <- nexpr
-            return $ Grow e
-        "Step" -> do
-            e <- nexpr
-            return $ Step e
+            Move x <$> nexpr
+        "Grow" -> Grow <$> nexpr
+        "Step" -> Step <$> nexpr
         "Wait" -> return Wait
         "Combine" -> do
             ts <- listOf transformation
@@ -311,15 +305,15 @@ object = do
     token $ char ','
     d <- token $ some alphanum
     token $ char ','
-    x <- token $ float
+    x <- token float
     token $ char ','
-    y <- token $ float
+    y <- token float
     token $ char ','
-    z <- token $ float
+    z <- token float
     token $ char ','
-    size <- token $ float
+    size <- token float
     token $ char ','
-    dir <- token $ float
+    dir <- token float
     token $ char ')'
     return (Object n d x y z size dir)
 

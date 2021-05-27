@@ -1,12 +1,12 @@
 module WebIDE where
 
-import Parser ( parseInput )
+import Parser (parseInput)
 import AnimationLib ( Object, AnimationSeq )
 
 import Control.Monad ( void )
 import Control.Concurrent ( runInBoundThread )
 import Control.Applicative
-import Data.IORef
+import Data.IORef ( modifyIORef, newIORef, readIORef )
 
 import qualified Graphics.UI.Threepenny as UI
 import Graphics.UI.Threepenny.Core
