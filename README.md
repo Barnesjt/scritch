@@ -2,10 +2,10 @@
 
 ## Milestone 2
 ### Project goals and progress:
-The main goal of the project, as originally stated, is to provide an educational functional programming experience. However, the focus of our work thus far has been towards creating an interactive programming (perhaps design?) experience. Our goal for the work after milestone 2 is to tie our final submission closer to the original goal.
+The main goal of the project, as originally stated, is to provide an educational functional programming experience. However, the focus of our work thus far has been towards creating an interactive programming (perhaps design?) experience. Our goal for the work after milestone 2 is to tie our final submission closer to the original goal. Some specific features we would like to add to the object language are variables (setting and getting) and ```While``` loops. Variables will require some model of state.
 
 ### What does the project do?
-Right now, when running the project (see: [Running the Project](#running-the-project)), a browser window will be launched to the Scritch IDE. Objects and their animations can be defined within the text area. New objects can be added and removed with the buttons. Pressing run will launch a render window with your defined animations. If a syntax error is detected, there will be some text in the render window telling you where the error occured.
+Right now, when running the project (see: [Running the Project](#running-the-project)), a browser window will be launched to the Scritch IDE. Objects and their animations can be defined within the text area. New objects can be added and removed with the buttons. Pressing run will launch a render window with your defined animations. If a syntax error is detected, there will be some text in the render window telling you where the error occured. Because of how our parser works, many type errors are considered syntax errors.
 
 Here are some sample definitions that should help you derive some interesting animations:
 
@@ -31,6 +31,11 @@ Here's a different example:
 ![Demo Output](https://user-images.githubusercontent.com/43552143/119758893-27dd1100-be5c-11eb-81cc-fccee4e891e2.gif)
 
 ### Design Decisions
+One significant design choice was the use of GADTs in our representation of the abstract syntax. The highly type-restricted abstract syntax makes writing parsers for the language safer, and fairly mechanical. Most notable is the ```Function``` datatype, which encodes the type of all functions in our language. In addition to making parsing safer, this type greatly reduces the amount of code needed to evaluate operators - they are all handled by the ```op``` function, regardless of the number and type of arguments.
+
+The cost of the type-directed parsing enforced by our GADTs is that certain things which could be done with one less safe parser, by ignoring the types of internal expressions, now require multiple parsers. The best example of this is the parsers ```iexpr``` and ```bexpr```. The primary benefit of our parsers is that they allow us to catch a large class of type errors while parsing, without having to separately type-check the program.
+
+Another related design choice was writing our own parsers, instead of using an external library. Our approach was heavily based on Hutton and Meijer's "Monadic parsing in Haskell" (http://www.cs.nott.ac.uk/~pszgmh//pearl.pdf) and a similar chapter in Hutton's "Programming in Haskell". We kept our ```Parser``` type simple, only implementing ```Monad``` (and ```Functor``` and ```Applicative```) and ```Alternative```. We believe this approach makes our code clean and easy to read, as well as reducing a small amount of overhead from another external library. It also makes fine-tuning our parsers easy, which is important when making (and, of course, re-making) decisions about the concrete syntax of our object language.
 
 ## Milestone 1
 Project goals and progress:
