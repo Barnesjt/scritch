@@ -28,7 +28,7 @@ data Expr a where
 
     -- retrieve info from an Object (should we represent this using Function?)
     -- that would mean having literal ObjectFields and Literal Objects, so probably no
-    Get     :: Object -> (ObjectField a) -> Expr a
+    Get     :: Object -> ObjectField a -> Expr a
 
     -- Transformations
     Pivot   :: Expr Float -> Transformation
@@ -91,7 +91,7 @@ data ObjectField a where
 -- maybe we just won't deal with them here, because they are handled by the doTransform functions
 eval :: Expr a -> a
 eval (Lit a)     = a
-eval (Bin f l r) = (op f) (eval l) (eval r)
+eval (Bin f l r) = op f (eval l) (eval r)
 eval (Un f e) = op f (eval e)
 eval (If c t e)  = if eval c then eval t else eval e
 eval (Get o f) = get f o where

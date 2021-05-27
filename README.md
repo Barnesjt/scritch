@@ -1,5 +1,33 @@
 # scritch
 
+## Milestone 2
+### Project goals and progress:
+The main goal of the project, as originally stated, is to provide an educational functional programming experience. However, the focus of our work thus far has been towards creating an interactive programming (perhaps design?) experience. Our goal for the work after milestone 2 is to tie our final submission closer to the original goal.
+
+### What does the project do?
+Right now, when running the project (see: [Running the Project](#running-the-project)), a browser window will be launched to the Scritch IDE. Objects and their animations can be defined within the text area. New objects can be added and removed with the buttons. Pressing run will launch a render window with your defined animations. If a syntax error is detected, there will be some text in the render window telling you where the error occured.
+
+Here are some sample definitions that should help you derive some interesting animations:
+`Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}`
+`Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 10 -> Combine [Step 10, Pivot 360]}`
+`Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 5 -> Grow 25}`
+`Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 10 -> Combine [Grow 25, Step 10, Pivot 360]}`
+
+
+You could do something interesting like:
+```
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 5 -> Combine [Grow 20, Step 10, Pivot 360]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 4 -> Combine [Grow 20, Step 10, Pivot 360]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 3 -> Combine [Grow 20, Step 10, Pivot 360]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 2 -> Combine [Grow 20, Step 10, Pivot 360]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Combine [Grow 20, Step 10, Pivot 360]}
+```
+
+Here's a different example:
+!(https://user-images.githubusercontent.com/43552143/119758893-27dd1100-be5c-11eb-81cc-fccee4e891e2.gif)
+
+### Design Decisions
+
 ## Milestone 1
 Project goals and progress:
 
