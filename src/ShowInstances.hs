@@ -1,4 +1,5 @@
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module ShowInstances where
 
@@ -15,16 +16,8 @@ instance Show (Expr a) where
 
     show (Get o f)    = "Get (Object " ++ name o ++ ") " ++ show f
 
-    show (Pivot e)    = "Pivot (" ++ show e ++ ")"
-    show (Move x y)   = "Move (" ++ show x ++ ") (" ++ show y ++ ")"
-    show (Grow e)     = "Grow (" ++ show e ++ ")"
-    show (Step e)     = "Step (" ++ show e ++ ")"
-    show Wait         = "Wait"
-    show (Combine xs) = let ss = foldr ((++) . (++ ", ") . show) "" xs in
-        case ss of
-            "" -> "Combine []"
-            xs -> "Combine [" ++ (init . init) xs ++ "]" -- remove the last comma
-
+-- standalone deriving
+deriving instance Show Transformation
 
 instance Show (Function a) where
     show Add           = "Add"

@@ -4,16 +4,10 @@ module AnimationLib where
 
 import Prelude hiding (LT, GT, EQ)
 
---Transformation is a minimal set of all possible Transformations.
--- This includes a combine type constructor for compound transformations.
-
--- Pivot is for rotating from the current angle
--- Move is an absolute move to new coordinates
--- Grow will change the object size by a factor (1.0 means it stays the same)
--- Step will move a distance in the direction it faces
--- Wait does nothing (remain static)
--- Combine sequences multiple transformations, eval'd left to right
 data Expr a where
+    -- variable reference
+    Var :: String -> TypeDec a -> Expr a
+
     -- Literals
     Lit     :: Show a => a -> Expr a   -- TODO: remove show constraint from Lit, it's only there for testing purposes
 
@@ -30,17 +24,35 @@ data Expr a where
     -- that would mean having literal ObjectFields and Literal Objects, so probably no
     Get     :: Object -> ObjectField a -> Expr a
 
-    -- Transformations
-    Pivot   :: Expr Float -> Transformation
-    Move    :: Expr Float -> Expr Float -> Transformation
-    Grow    :: Expr Float -> Transformation
-    Step    :: Expr Float -> Transformation
-    Wait    :: Transformation
-    Combine :: [Transformation] -> Transformation
 
----- We assume that expressions which evaluate to null are moving objects,
--- because object movement is the only side effect. The type synonym reflects this.
-type Transformation = Expr ()
+
+data TypeDec a where
+    TyInt   :: TypeDec Int
+    TyFloat :: TypeDec Float
+    TyBool  :: TypeDec Bool
+    TyStr   :: TypeDec String
+    TyObj   :: TypeDec Object
+
+    TyUn    :: TypeDec a -> TypeDec b -> TypeDec (Function (a -> b))
+    TyBin   :: TypeDec a -> TypeDec b -> TypeDec c -> TypeDec (Function (a -> b -> c))
+    TyComp  :: TypeDec (Function (b -> c)) -> TypeDec (Function (a -> b)) -> TypeDec (Function (a -> c))
+
+
+--Transformation is a minimal set of all possible Transformations.
+-- This includes a combine type constructor for compound transformations.
+
+-- Pivot is for rotating from the current angle
+-- Move is an absolute move to new coordinates
+-- Grow will change the object size by a factor (1.0 means it stays the same)
+-- Step will move a distance in the direction it faces
+-- Wait does nothing (remain static)
+-- Combine sequences multiple transformations, eval'd left to right
+data Transformation = Pivot   (Expr Float)
+                    | Move    (Expr Float) (Expr Float)
+                    | Grow    (Expr Float)
+                    | Step    (Expr Float)
+                    | Wait
+                    | Combine [Transformation]
 
 -- type for all functions
 data Function a where
