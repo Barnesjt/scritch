@@ -1,13 +1,16 @@
 module Main where
 
-import GlossRunner ( run )
+import GlossRunner ( runGloss )
 import Web.Browser (openBrowser)
+import WebIDE ( runIDE )
 
 import Play.State
 import TestDefns
 
 main :: IO ()
-main = GlossRunner.run
+main = do 
+    openBrowser "http://localhost:8023"
+    runIDE $ GlossRunner.runGloss . tempParser
 
 
 

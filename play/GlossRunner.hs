@@ -9,6 +9,5 @@ import Play.State
 bgColor :: GG.Color
 bgColor = white
 
-
-run :: PlayState -> IO ()
-run = play (InWindow "Scritch Output" (500, 500) (10, 10)) bgColor 60 pongGame drawState eventHandler stepState
+runGloss :: PlayState -> IO ()
+runGloss state = play (InWindow "Scritch Output" (500, 500) (10, 10)) bgColor 60 state drawState eventHandler stepState
