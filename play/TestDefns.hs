@@ -5,6 +5,8 @@ import Play.Object
 import Play.Event
 import Play.EventCons
 
+import Graphics.Gloss.Interface.IO.Game ( Key(..) )
+
 import Data.Map.Strict as M (fromList)
 
 -- Here are all the definitions needed for the Pong example
@@ -18,8 +20,8 @@ obj6 = Object {shape = Rect 1, visible = True, posx = -250, posy = 250, posz = 0
 obj7 = Object {shape = Rect 1, visible = True, posx = 750, posy = 250, posz = 0, size = 500, dir = 0}
 
 pongObjs :: ObjMap
-pongObjs = M.fromList [ ("ball", obj1), 
-                        ("paddle1", obj2), 
+pongObjs = M.fromList [ ("ball", obj1),
+                        ("paddle1", obj2),
                         ("paddle2", obj3),
                         ("topbound", obj4),
                         ("bottombound", obj5),
@@ -35,7 +37,8 @@ pongEvents =    [stepBall 5
                 , collideReset "ball" "leftbound" (250,250)
                 , collideReset "ball" "rightbound" (250, 250)
                 , followY "paddle1"
-                , followY "paddle2"
+                , genEvent (GlossKey (Char 'w')) "paddle2" stepY (const 10)
+                , genEvent (GlossKey (Char 's')) "paddle2" stepY (const (-10))
                 ]
 
 pongGame :: PlayState

@@ -2,13 +2,11 @@ module Play.Event where
 
 import Play.Object ( ObjMap, Object )
 import Data.Map.Strict as M ( lookup, insert )
+import Graphics.Gloss.Interface.IO.Game (Key)
 
 data EventTrigger
     = Always
-    | KbUp
-    | KbDown
-    | KbLeft
-    | KbRight
+    | GlossKey Key
     | MouseX
     | MouseY
     | Collide String String

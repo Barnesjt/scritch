@@ -1,6 +1,6 @@
 module Play.Gloss.Handlers where
 
-import Play.State 
+import Play.State
 import Play.Object
 import Play.Event
 import Play.Evaluator
@@ -26,7 +26,7 @@ drawState state = Pictures $ drawObjects objMap
 drawObjects :: ObjMap  -> [Picture]
 drawObjects = M.foldr ((:) . objToPict) [Blank]
 
---This is how each picture is drawn for an object, visible is screened first, then shape 
+--This is how each picture is drawn for an object, visible is screened first, then shape
 objToPict :: Object -> Picture
 objToPict obj = if not $ visible obj
                 then Blank
@@ -35,11 +35,8 @@ objToPict obj = if not $ visible obj
                     Play.Object.Rect x -> Translate (-250) (-250) (Translate (posx obj) (posy obj) (Rotate (dir obj) (GG.rectangleWire (Play.Object.size obj) (Play.Object.size obj * x))))
 
 --This is how a Gloss event is parsed down and the events are run.
-eventHandler :: Event -> PlayState -> PlayState 
-eventHandler (EventKey (SpecialKey KeyUp) Down _ _) state = state {objects = runEvents KbUp (events state) (objects state) 0}
-eventHandler (EventKey (SpecialKey KeyDown) Down _ _) state = state {objects = runEvents KbDown (events state) (objects state) 0}
-eventHandler (EventKey (SpecialKey KeyLeft) Down _ _) state = state {objects = runEvents KbLeft (events state) (objects state) 0}
-eventHandler (EventKey (SpecialKey KeyRight) Down _ _) state = state {objects = runEvents KbRight (events state) (objects state) 0}
+eventHandler :: Event -> PlayState -> PlayState
+eventHandler (EventKey k Down _ _) state = state {objects = runEvents (GlossKey k) (events state) (objects state) 0}
 eventHandler (EventMotion (x,y) ) state = state {objects = secondObj}
     where firstObj = runEvents MouseX (events state) (objects state) (x+250) :: ObjMap
           secondObj = runEvents MouseY (events state) firstObj (y+250) :: ObjMap
@@ -48,9 +45,9 @@ eventHandler  _ state = state
 --To constant update the state this stepping function is required.
 --  Here any events Triggered by Always are run each time.
 --  Then collisions are checked for
-stepState :: Float -> PlayState -> PlayState 
+stepState :: Float -> PlayState -> PlayState
 stepState elapsed state = collisStep
-    where 
+    where
         frames = elapsed * 60
         alwaysStep = state {objects = runEvents Always (events state) (objects state) frames}
         collisStep = runCollisions alwaysStep

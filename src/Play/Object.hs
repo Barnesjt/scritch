@@ -7,7 +7,7 @@ data Object =
   Object {
       shape :: Shape,   -- shape defines the appearance of the object
       visible :: Bool,  -- whether to draw the image or not
-      posx :: Float,    -- posx and posy are locations on the screen 
+      posx :: Float,    -- posx and posy are locations on the screen
       posy :: Float,
       posz :: Float,    -- posz would be the depth in the scene to render the object
       size :: Float,    -- size is the draw size
@@ -55,3 +55,8 @@ moveX x obj = obj { posx = x }
 moveY :: Float -> Object -> Object
 moveY y obj = obj { posy = y }
 
+stepY :: Float -> Object -> Object
+stepY dy obj = obj {posy = posy obj + dy}
+
+stepX :: Float -> Object -> Object
+stepX dx obj = obj {posx = posx obj + dx}
