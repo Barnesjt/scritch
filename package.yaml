@@ -26,11 +26,12 @@ library:
   source-dirs: src
   dependencies:
   - containers
+  - gloss
 
 executables:
-  scritch-exe:
+  scritch-anim:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         anim
     ghc-options:
     - -threaded
     - -rtsopts
@@ -41,9 +42,9 @@ executables:
     - threepenny-gui
     - open-browser
     - containers
-  alt-exe:
-    main:             Main.hs
-    source-dirs:      play
+  scritch-play:
+    main:               Main.hs
+    source-dirs:        play
     ghc-options:
     - -threaded
     - -rtsopts

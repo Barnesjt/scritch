@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module AnimationLib where
+module Anim.AnimationLib where
 
 import Prelude hiding (LT, GT, EQ)
 

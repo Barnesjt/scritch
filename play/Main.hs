@@ -1,6 +1,6 @@
 module Main where
 
-import GlossRunnerAlt
+import GlossRunner ( run )
 
 main :: IO ()
-main = GlossRunnerAlt.run
+main = GlossRunner.run

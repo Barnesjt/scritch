@@ -5,8 +5,8 @@ import Data.Fixed ( mod' )
 import Data.List ( find )
 
 
-import AnimationLib as ALib
-import Test as TestSt
+import Anim.AnimationLib as ALib
+import Anim.Test as TestSt
 
 --This file is mostly up in the air right now
   --The code here is to demonstrate the project, but not intended to be final

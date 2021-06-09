@@ -1,9 +1,9 @@
-module Test where
+module Anim.Test where
 
 import Prelude hiding (LT, GT, EQ)
-import AnimationLib
-import ShowInstances
-import Parser
+import Anim.AnimationLib
+import Anim.ShowInstances
+import Anim.Parser
 
 --Some testing/dummy values for an object, transformations, and animation seq
 testObj :: Object

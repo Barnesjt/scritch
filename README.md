@@ -94,9 +94,15 @@ Clone the repo and run the following:
 
 Problems? Go to the [Troubleshooting](#troubleshooting) section.
 
-All good? Now run this:
+All good? Good! Right now there are 2 different modes (!!).
 
-`stack exec scritch-exe`
+The first mode essentially matches the Milestone 2 submission. It's for animations only. You can run it by running:
+
+`stack exec scritch-anim`
+
+The second mode is the newest. It takes user input, and is entirely event driven. To give it a whirl, run the following:
+
+`stack exec scritch-play`
 
 ## Troubleshooting
 
@@ -108,7 +114,6 @@ Missing C library GL?
 Now missing GLU?
 
 `sudo apt install freeglut3{,-dev}`
-
 
 You're gonna need these:
 
