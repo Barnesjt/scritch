@@ -33,17 +33,17 @@ repT :: TimedTransformation -> Int -> AnimationSeq
 repT t 0 = []
 repT t i = t : repT t (i-1)
 
--- should return 90
-testE1 :: Expr Int
-testE1 = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
-                (Bin Mul (Lit 9) (Lit 10))
-                (Bin Sub (Lit 9) (Lit 10))
-
-testE2 :: Transformation
-testE2 = Combine [Combine [], Wait, Move (Get testObj PosX) (Bin (Compose Add Neg) (Lit 9) (Lit 9))]
-
-parse1 :: Either AnimationSeq Error
-parse1 = strict animationSeq "{0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}"
-
-parse2 :: Either (Object, AnimationSeq) Error
-parse2 = strict stmt "Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}"
+-- -- should return 90
+-- testE1 :: Expr Int
+-- testE1 = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
+--                 (Bin Mul (Lit 9) (Lit 10))
+--                 (Bin Sub (Lit 9) (Lit 10))
+--
+-- testE2 :: Transformation
+-- testE2 = Combine [Combine [], Wait, Move (Get testObj PosX) (Bin (Compose Add Neg) (Lit 9) (Lit 9))]
+--
+-- parse1 :: Either AnimationSeq Error
+-- parse1 = strict animationSeq "{0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}"
+--
+-- parse2 :: Either (Object, AnimationSeq) Error
+-- parse2 = strict stmt "Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Step -10; 1 -> Step 10}"
