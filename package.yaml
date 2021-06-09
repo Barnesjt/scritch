@@ -24,6 +24,8 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+  - containers
 
 executables:
   scritch-exe:
@@ -38,4 +40,17 @@ executables:
     - gloss
     - threepenny-gui
     - open-browser
-
+    - containers
+  alt-exe:
+    main:             Main.hs
+    source-dirs:      play
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - scritch
+    - gloss
+    - threepenny-gui
+    - open-browser
+    - containers
