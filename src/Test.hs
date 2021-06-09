@@ -2,7 +2,7 @@ module Test where
 
 import Prelude hiding (LT, GT, EQ)
 import AnimationLib
-import ShowInstances
+import AST
 import Parser
 
 --Some testing/dummy values for an object, transformations, and animation seq

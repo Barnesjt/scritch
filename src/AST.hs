@@ -2,21 +2,24 @@
 
 module AST where
 
-import Data.Dynamic (Typeable)
 import Prelude hiding (LT, GT, EQ)
+import Data.Dynamic
 
 data Expr a where
     -- variable reference
-    Var :: Typeable a => String -> TypeDec a -> Expr a
+    Var     :: Typeable a => String -> TypeDec a -> Expr a
 
     -- variable assignment
-    Let :: Typeable a => String -> TypeDec a -> Expr a -> Expr a
+    Let     :: Typeable a => String -> TypeDec a -> Expr a -> Expr a
 
     -- Literals
-    Lit     :: (Show a, Typeable a) => a -> Expr a   -- TODO: remove show constraint from Lit, it's only there for testing purposes
+    Lit     :: Show a => a -> Expr a   -- TODO: remove show constraint from Lit, it's only there for testing purposes
 
-    -- functions
-    Fn      :: Function a -> Expr a
+    -- unary operatators
+    Un      :: Function (a -> b) -> Expr a -> Expr b
+
+    -- binary operators
+    Bin     :: Function (a -> b -> c) -> Expr a -> Expr b -> Expr c
 
     -- conditional
     If      :: Expr Bool -> Expr a -> Expr a -> Expr a
@@ -24,6 +27,7 @@ data Expr a where
     -- retrieve info from an Object (should we represent this using Function?)
     -- that would mean having literal ObjectFields and Literal Objects, so probably no
     Get     :: Object -> ObjectField a -> Expr a
+
 
 
 data TypeDec a where
@@ -56,9 +60,6 @@ data Transformation = Pivot   (Expr Float)
 
 -- type for all functions
 data Function a where
-    -- basic functions
-    FLit :: a -> Function a
-
     Add :: Num a => Function (a -> a -> a)
     Mul :: Num a => Function (a -> a -> a)
     Sub :: Num a => Function (a -> a -> a)
@@ -73,12 +74,24 @@ data Function a where
     Not :: Function (Bool -> Bool)
     Neg :: Num a => Function (a -> a)
 
-    -- higher order fns
-    FVar    :: Typeable a => String -> TypeDec a -> Function a
-    Abs     :: String -> TypeDec a -> Function b -> Function (a -> b)
-    Ap      :: Typeable a => Function (a -> b) -> Function a -> Function b
-
     Compose :: Function (b -> c) -> Function (a -> b) -> Function (a -> c)
+
+op :: Function a -> a
+op Add = (+)
+op Mul = (*)
+op Sub = (-)
+
+op And = (&&)
+op Or  = (||)
+
+op LT  = (<)
+op GT  = (>)
+op EQ  = (==)
+
+op Not = not
+op Neg = negate
+
+op (Compose f g) = op f . op g
 
 -- data type of Object field references, for use with Get
 data ObjectField a where
@@ -92,20 +105,20 @@ data ObjectField a where
 
 -- evaluate an abstract expression -- currently don't know what to do with Tranformations
 -- maybe we just won't deal with them here, because they are handled by the doTransform functions
--- eval :: Expr a -> a
--- eval (Lit a)     = a
--- eval (Bin f l r) = op f (eval l) (eval r)
--- eval (Un f e) = op f (eval e)
--- eval (If c t e)  = if eval c then eval t else eval e
--- eval (Get o f) = get f o where
---     get :: ObjectField a -> Object -> a
---     get Name = name
---     get Disp = disp
---     get PosX = posx
---     get PosY = posy
---     get PosZ = posz
---     get Size = size
---     get Dir  = dir
+eval :: Expr a -> a
+eval (Lit a)     = a
+eval (Bin f l r) = op f (eval l) (eval r)
+eval (Un f e) = op f (eval e)
+eval (If c t e)  = if eval c then eval t else eval e
+eval (Get o f) = get f o where
+    get :: ObjectField a -> Object -> a
+    get Name = name
+    get Disp = disp
+    get PosX = posx
+    get PosY = posy
+    get PosZ = posz
+    get Size = size
+    get Dir  = dir
 
 
 -- Object is defined with record syntax

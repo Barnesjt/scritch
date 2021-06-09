@@ -6,6 +6,7 @@ import Data.Fixed ( mod' )
 import Data.List ( find )
 
 import AnimationLib as ALib
+import AST
 import Test as TestSt
 
 --This file is mostly up in the air right now

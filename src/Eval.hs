@@ -57,13 +57,13 @@ empty = S (\s -> (Nothing, s))
 -- monadic eval
 evalM :: Expr a -> State a
 evalM (Lit x) = return x
--- evalM (Bin f l r) = do
---     l' <- evalM l
---     r' <- evalM r
---     return $ op f l' r'
--- evalM (Un f e) = do
---     e' <- evalM e
---     return $ op f e'
+evalM (Bin f l r) = do
+    l' <- evalM l
+    r' <- evalM r
+    return $ op f l' r'
+evalM (Un f e) = do
+    e' <- evalM e
+    return $ op f e'
 evalM (If c t e) = do
     c' <- evalM c
     r <- evalM (if c' then t else e)
@@ -78,51 +78,6 @@ evalM (Let v t e) = do
     x <- evalM e
     put (insert v x s)
     return x
-evalM (Fn f) = fn f
-
-
--- evaluate functions
-fn :: Function a -> State a
-fn Add = return (+)
--- fn Mul = (*)
--- fn Sub = (-)
---
--- fn And = (&&)
--- fn Or  = (||)
---
--- fn LT  = (<)
--- fn GT  = (>)
--- fn EQ  = (==)
---
--- fn Not = not
--- fn Neg = negate
-
-fn (FLit x) = return x
-
-fn (FVar v t) = do
-    s <- get
-    case query v t s of
-        Just x -> return x
-        Nothing -> empty
-fn (Ap (Abs v t e) x) = do
-    s <- get  -- get initial state
-    put (insert v x s) -- temporarily set v to x in state
-    r <- fn e -- evaluate e with v := x
-    put s     -- reset to initial state
-    return r  -- return result
-fn (Ap f x) = do
-    f' <- fn f
-    x' <- fn x
-    return $ f' x'
-
-testFn :: Function (Int -> Int)
-testFn = Abs "x" TyInt (Ap (Ap Add (FLit 1)) (FVar "x" TyInt))
-
-testFn2 :: Function Int
-testFn2 = Ap testFn (FLit 2)
-
-testF :: Expr Int
-testF = Fn testFn2
 
 
 runState :: State a -> Store -> (Maybe a, Store)
