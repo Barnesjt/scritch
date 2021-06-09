@@ -3,10 +3,11 @@ module Anim.Parser where
 
 import Control.Applicative
 import Control.Monad
-import Anim.AnimationLib
 import Prelude hiding (EQ, LT, GT)
 import Data.Char (isAlphaNum)
 
+import Anim.AnimationLib
+import Anim.AST
 
 type Error = String
 

@@ -2,7 +2,7 @@ module Anim.Test where
 
 import Prelude hiding (LT, GT, EQ)
 import Anim.AnimationLib
-import Anim.ShowInstances
+import Anim.AST
 import Anim.Parser
 
 --Some testing/dummy values for an object, transformations, and animation seq
@@ -39,7 +39,7 @@ testE1 = If (Bin Or (Bin GT (Lit 9) (Lit 10)) (Lit True))
                 (Bin Mul (Lit 9) (Lit 10))
                 (Bin Sub (Lit 9) (Lit 10))
 
-testE2 :: Expr ()
+testE2 :: Transformation
 testE2 = Combine [Combine [], Wait, Move (Get testObj PosX) (Bin (Compose Add Neg) (Lit 9) (Lit 9))]
 
 parse1 :: Either AnimationSeq Error

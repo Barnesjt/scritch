@@ -2,10 +2,11 @@ module GlossRunner where
 
 import Graphics.Gloss as GG
 import Data.Fixed ( mod' )
+
 import Data.List ( find )
 
-
 import Anim.AnimationLib as ALib
+import Anim.AST
 import Anim.Test as TestSt
 
 --This file is mostly up in the air right now
@@ -14,7 +15,6 @@ import Anim.Test as TestSt
 --Color for the window background
 bgColor :: GG.Color
 bgColor = white
-
 
 --Currently this just takes a string to put into the title
   --Should be modified to take the whatever type the parsed input would be
@@ -40,4 +40,3 @@ myAnimation anim obj x = case disp obj of
 -- This will need to be expanded to parse out different display values for objects
 objToPic :: Object -> Picture
 objToPic obj = Translate (-250) (-250) (Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj))))
-
