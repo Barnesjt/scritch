@@ -1,8 +1,8 @@
 {-# LANGUAGE GADTs #-}
 
-module ShowInstances where
+module Anim.ShowInstances where
 
-import AnimationLib
+import Anim.AnimationLib
 import Prelude hiding (EQ, LT, GT)
 import Data.Typeable
 

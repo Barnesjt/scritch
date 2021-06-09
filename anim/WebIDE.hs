@@ -1,7 +1,7 @@
 module WebIDE where
 
-import Parser (parseInput)
-import AnimationLib ( Object, AnimationSeq )
+import Anim.Parser (parseInput)
+import Anim.AnimationLib ( Object, AnimationSeq )
 
 import Control.Monad ( void )
 import Control.Concurrent ( runInBoundThread )

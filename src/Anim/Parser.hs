@@ -1,9 +1,9 @@
 {-# LANGUAGE LambdaCase #-}
-module Parser where
+module Anim.Parser where
 
 import Control.Applicative
 import Control.Monad
-import AnimationLib
+import Anim.AnimationLib
 import Prelude hiding (EQ, LT, GT)
 import Data.Char (isAlphaNum)
 
