@@ -39,6 +39,14 @@ Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 1 -> Combine [Grow 20, Ste
 Here's a different example:
 ![Demo Output](https://user-images.githubusercontent.com/43552143/119758893-27dd1100-be5c-11eb-81cc-fccee4e891e2.gif)
 
+Here's the code for the example below it:
+```
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 0 -> Pivot 0; 2 -> Combine [Step 100, Pivot 360, Grow 12]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 0 -> Pivot 72; 2 -> Combine [Step 100, Pivot 360, Grow 12]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 0 -> Pivot 144; 2 -> Combine [Step 100, Pivot 360, Grow 12]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 0 -> Pivot 216; 2 -> Combine [Step 100, Pivot 360, Grow 12]}
+Obj (x, Circle, 0, 0,0 ,20 ,0) -> {0 -> Move 250 250; 0 -> Pivot 288; 2 -> Combine [Step 100, Pivot 360, Grow 12]}
+```
 And Another:
 ![Demo Output2](https://user-images.githubusercontent.com/43552143/119771419-87deb200-be72-11eb-9201-baf6c23fb8fe.gif)
 
