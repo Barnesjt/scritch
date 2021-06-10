@@ -96,20 +96,17 @@ Problems? Go to the [Troubleshooting](#troubleshooting) section.
 
 All good? Good! Right now there are 2 different modes (!!).
 
-The first mode essentially matches the Milestone 2 submission. It's for animations only. You can run it by running:
-
-`stack exec scritch-anim`
-
-The second mode is the newest. It takes user input, and is entirely event driven. To give it a whirl, run the following:
+Now you can run the project with:
 
 `stack exec scritch-play`
+
+This differs from the previous version in that there is a drop down box that gives 2 different options for input programs. The first is Animate, which matches the previous version of the program (except there is a single input box, new lines denote new objects). The second is Play, which is a new stateful execution that is entirely event driven. Give it a whirl!
 
 ## Troubleshooting
 
 Missing C library GL?
 
 `sudo apt install libgl1-mesa-dev`
-
 
 Now missing GLU?
 
