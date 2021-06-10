@@ -1,25 +1,12 @@
-module GlossRunner where
-
-import Graphics.Gloss as GG
-import Data.Fixed ( mod' )
-
-import Data.List ( find )
+module Anim.Gloss.Handlers where
 
 import Anim.AnimationLib as ALib
 import Anim.AST
-import Anim.Test as TestSt
 
---This file is mostly up in the air right now
-  --The code here is to demonstrate the project, but not intended to be final
+import Graphics.Gloss as GG
+import Data.Fixed ( mod' )
+import Data.List ( find )
 
---Color for the window background
-bgColor :: GG.Color
-bgColor = white
-
---Currently this just takes a string to put into the title
-  --Should be modified to take the whatever type the parsed input would be
-runGloss :: [(Object, AnimationSeq)] -> IO ()
-runGloss objAn = animate (InWindow "Scritch Output" (500, 500) (10, 10)) bgColor $ pictures . myListAnimator objAn
 
 myListAnimator :: [(Object, AnimationSeq)] -> Float -> [Picture]
 myListAnimator [] _       = [blank]
@@ -40,3 +27,4 @@ myAnimation anim obj x = case disp obj of
 -- This will need to be expanded to parse out different display values for objects
 objToPic :: Object -> Picture
 objToPic obj = Translate (-250) (-250) (Translate (posx obj) (posy obj) (Rotate (dir obj) (Circle (size obj))))
+

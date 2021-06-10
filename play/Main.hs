@@ -1,6 +1,12 @@
 module Main where
 
-import GlossRunner ( run )
+import WebIDE ( runIDE )
+import GlossRunner
+import Anim.Parser as AP
+import Play.Parser as PP
 
+import Web.Browser (openBrowser)
 main :: IO ()
-main = GlossRunner.run
+main = do 
+    openBrowser "http://localhost:8023"
+    runIDE (GlossRunner.runGlossAnim . map AP.parseInput . lines) (GlossRunner.runGlossPlay . PP.tempParser)
