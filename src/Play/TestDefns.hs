@@ -1,4 +1,4 @@
-module TestDefns where
+module Play.TestDefns where
 
 import Play.State
 import Play.Object
