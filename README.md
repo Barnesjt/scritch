@@ -1,7 +1,7 @@
 # Scritch
 
 ## Welcome to Scritch!
-See the section below for information pertaining to our [Milestone 2](#milestone-2) submission. For instructions running Scritch see: [Running The Project](#running-the-project). If you need help installing stack (required the build the project), see: [Install Stack](#install-stack). If you are having difficulty building Scritch, you likely need to acquire some external libraries (as required by Gloss, our package for drawing OpenGL render windows). These libraries are listed in the [Troubleshooting](#troubleshooting) section.
+See [Scritch.pdf](Scritch.pdf) for the full report. For instructions running Scritch see: [Running The Project](#running-the-project). If you need help installing stack (required the build the project), see: [Install Stack](#install-stack). If you are having difficulty building Scritch, you likely need to acquire some external libraries (as required by Gloss, our package for drawing OpenGL render windows). These libraries are listed in the [Troubleshooting](#troubleshooting) section.
 
 If you have any issues with the project, please reach out directly and we will be more than glad to help get it running for you!
 
